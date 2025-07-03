@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Final Goodbye</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="letter-container">
+    <div class="letter" id="letter"></div>
+  </div>
+
+  <script src="background.js"></script>
+<script src="effects.js"></script>
+  <script src="audio.js"></script>
+  <script>
+    // --- Setup ---
+    // Background is loaded automatically by background.js
+    GlitchManager.init();
+    AudioManager.startSoundtrack();
+    AudioManager.setSoundtrackPitch(1.2); // A little more intense for the final reveal
+
+    const message = `
+      I always remembered that mirror — not because it showed me myself,
+      but because that’s where I saw you for the first time.
+
+      Every Thursday, every pen I held, every nervous scratch...
+      they were all small pieces of something real.
+
+      You were real.
+
+      But love is not just a memory — it’s a rhythm that must be danced together.
+      And when one stops, silence takes over.
+
+      So this is my final Thursday.
+      My final scratch.
+      My final look in that mirror.
+
+      Goodbye, Abdelrazak.
+    `;
+
+    const letterContainer = document.getElementById('letter');
+    let delay = 0;
+
+    message.trim().split('').forEach((char) => {
+      const span = document.createElement('span');
+      if (char === '\n') {
+        letterContainer.appendChild(document.createElement('br'));
+      } else {
+        span.textContent = char;
+        span.style.animationDelay = `${delay}s`;
+        if (char !== ' ' && char.trim() !== '') {
+            delay += 0.05;
+        }
+        letterContainer.appendChild(span);
+      }
+    });
+
+    // --- The Final Fade to the Echo screen ---
+    const totalAnimationTime = delay * 1000 + 6000; // Total typing time + 6s pause
+    setTimeout(() => {
+        AudioManager.fadeOutSoundtrack(2000);
+        document.body.classList.add('fade-out');
+        // Redirect to the final, permanent "Echo" screen
+        setTimeout(() => window.location.href = 'end.html', 2000);
+    }, totalAnimationTime);
+  </script>
+</body>
+</html>

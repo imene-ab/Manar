@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>The Last Run | الخميس الأخير</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body id="page-game">
+  <div id="game-wrapper">
+    <div id="ui-container">
+      <div id="powerup-timers"></div>
+      <div class="progress-bar-container">
+        <div id="progress-bar"></div>
+      </div>
+      <div id="score-display">Score: 0</div>
+      <p id="progress-text">Memory Fragments Collected</p>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="start-screen" class="overlay">
+      <h1>The Last Run</h1>
+      <p class="description">
+        The path is fractured. The memories, scattered.<br>
+        Survive long enough to remember it all.<br>
+        Collect <strong>250</strong> memory fragments to reveal the final message.
+      </p>
+      <div class="instructions">
+        <strong>ARROW KEYS / A / D / SPACE</strong> or <strong>TOUCH/DRAG</strong>
+      </div>
+      <button id="start-btn">Begin Run</button>
+      <p class="footer-hint">dir kitman :)</p>
+    </div>
+
+    <div id="game-over-screen" class="overlay hidden">
+      <h1>Run Ended</h1>
+      <p class="final-score-label">Final Score</p>
+      <p id="final-score">0</p>
+      <button id="retry-btn">Retry Run</button>
+      <div class="memory-progress-recap">
+          <p>Total Memory Collected:</p>
+          <div class="progress-bar-container-recap">
+              <div id="recap-progress-bar"></div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fin.</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- This page starts empty and is controlled by the EchoManager -->
+    <script src="background.js"></script>
+<script src="effects.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            EchoManager.init(); // This page's ONLY job is to run the Echo effect.
+        });
+    </script>
+</body>
+</html>
