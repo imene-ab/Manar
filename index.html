@@ -359,14 +359,15 @@
             const letterContainer = document.getElementById('letter');
             let delay = 0;
 
-            // Using your original method with spaces and newlines
             message.split('').forEach(char => {
                 if (char === '\n') {
                     letterContainer.appendChild(document.createElement('br'));
                 } else {
                     const span = document.createElement('span');
-                    // Use a non-breaking space for ' ' to ensure it takes up space and can be animated
-                    span.innerHTML = (char === ' ') ? ' ' : char; 
+                    // --- THIS IS THE FIX ---
+                    // Using a regular space ' ' instead of a non-breaking space ' '
+                    // This allows the text to wrap correctly on small screens.
+                    span.innerHTML = char; 
                     span.style.animationDelay = `${delay}s`;
                     if (char !== ' ') { // Only increment delay for non-space characters
                         delay += .05;
