@@ -53,7 +53,7 @@ function initGameScene() {
         setupEventListeners(); 
         resizeCanvas(); 
         gameLoop(); 
-        AudioManager.setSoundtrackPitch(1.0); 
+        if(window.AudioManager) AudioManager.setSoundtrackPitch(1.0); 
     }
     
     function gameLoop() { 
@@ -72,12 +72,13 @@ function initGameScene() {
     
     function startGame() {
         if (gameState === 'PLAYING' || gameState === 'LETTER_MODE') return;
-        GlitchManager.trigger(200);
-        AudioManager.playSound('transition');
-        AudioManager.setSoundtrackPitch(1.0);
+        if(window.GlitchManager) GlitchManager.trigger(200);
+        if(window.AudioManager) {
+            AudioManager.playSound('transition');
+            AudioManager.setSoundtrackPitch(1.0);
+        }
         
         gameState = 'PLAYING';
-        // Reload memory in case it was penalized on the game over screen
         totalMemoryCollected = Number(localStorage.getItem('lastRunMemory')) || 0;
         resetRunState();
 
@@ -91,8 +92,7 @@ function initGameScene() {
         items = [];
         bullets = [];
         particles = [];
-        // totalMemoryCollected is NOT reset here to persist progress
-        currentLetterIndex = 0; // Reset just in case player retries from game over during letter mode
+        currentLetterIndex = 0;
 
         player.x = canvas.width / 2 - player.width / 2;
         player.y = canvas.height - (60 * scaleRatio);
@@ -107,15 +107,13 @@ function initGameScene() {
     }
     
     function handleGameOver() {
-        if (gameState === 'GAMEOVER') return; // Don't trigger twice
+        if (gameState === 'GAMEOVER') return; 
         gameState = 'GAMEOVER';
-        AudioManager.playSound('damage');
-        // AudioManager.setSoundtrackPitch(0.5); // <<< FIX: This line was removed to prevent audio slowdown.
+        if(window.AudioManager) AudioManager.playSound('damage');
         createBurst(player.x + player.width / 2, player.y + player.height / 2, colors.white, 50);
 
-        // ** MODIFIED: Apply penalty instead of a full reset **
-        totalMemoryCollected = Math.max(0, totalMemoryCollected - 20); // Lose 20, but not below 0
-        localStorage.setItem('lastRunMemory', totalMemoryCollected); // Save penalized score for recap/retry
+        totalMemoryCollected = Math.max(0, totalMemoryCollected - 20); 
+        localStorage.setItem('lastRunMemory', totalMemoryCollected);
         
         uiContainer.classList.remove('visible');
         finalScoreDisplay.textContent = runScore;
@@ -126,28 +124,20 @@ function initGameScene() {
         gameOverScreen.classList.remove('hidden');
     }
     
-    // ** NEW FUNCTION: Handle failure only in letter mode **
     function handleLetterModeFailure() {
-        AudioManager.playSound('distort');
-        GlitchManager.trigger(300);
-
-        // Reset only the letter sequence progress
+        if(window.AudioManager) AudioManager.playSound('distort');
+        if(window.GlitchManager) GlitchManager.trigger(300);
         currentLetterIndex = 0;
-        items = []; // Clear the screen of letters
+        items = []; 
         bullets = [];
-
-        // Reset spawn timer to start spawning letters again quickly
         spawnTimer = 50;
-
-        // Update UI to show the first target letter again
         updateUI();
     }
 
-
     function startLetterSequence() {
         gameState = 'LETTER_MODE';
-        AudioManager.playSound('powerup');
-        items = []; // Clear existing items
+        if(window.AudioManager) AudioManager.playSound('powerup');
+        items = [];
         spawnTimer = 50;
         currentLetterIndex = 0;
         document.getElementById('progress-text').style.display = 'none';
@@ -178,33 +168,29 @@ function initGameScene() {
                 ps.start(3500);
             });
 
-            // --- NEW CODE BLOCK START ---
-            // After 4 seconds, make the letters solid
             setTimeout(() => {
-                AudioManager.playSound('promise'); // Add a satisfying sound effect
+                if(window.AudioManager) AudioManager.playSound('promise');
                 cinematicOverlay.querySelectorAll('.cinematic-letter').forEach(span => {
                     span.classList.add('solid');
                 });
             }, 4000);
-            // --- NEW CODE BLOCK END ---
 
-            // Existing break-apart logic
             setTimeout(() => {
-                AudioManager.playSound('explode');
+                if(window.AudioManager) AudioManager.playSound('explode');
                 cinematicOverlay.querySelectorAll('.cinematic-letter').forEach(span => {
                     span.style.setProperty('--tx', `${(Math.random() - 0.5) * 80}vw`);
                     span.style.setProperty('--ty', `${(Math.random() - 0.5) * 80}vh`);
                     span.style.setProperty('--r', `${(Math.random() - 0.5) * 720}deg`);
                     span.classList.add('break');
                 });
-            }, 5000);
+            }, 7000); 
             
             setTimeout(() => {
                 widescreenContainer.style.opacity = '0';
                 setTimeout(() => {
-                    window.SceneManager.next();
+                    if (window.SceneManager) window.SceneManager.next();
                 }, 1000);
-            }, 7000);
+            }, 9000);
         }, 600);
     }
     
@@ -277,18 +263,17 @@ function initGameScene() {
     function update() { updateEffects(); handlePlayerInput(); updatePlayer(); updateItems(); updateBullets(); updateParticles(); checkCollisions(); spawnItems(); runScore++; updateUI(); }
 
     function handlePlayerItemCollision(item, idx) {
-        // ** MODIFIED: Delegate failure based on game mode **
         if (item.type.startsWith('letter')) {
-            if (item.letter === TARGET_WORD[currentLetterIndex]) { // Correct letter
+            if (item.letter === TARGET_WORD[currentLetterIndex]) { 
                 currentLetterIndex++;
-                AudioManager.playSound('promise');
+                if(window.AudioManager) AudioManager.playSound('promise');
                 items.splice(idx, 1);
                 if (currentLetterIndex >= TARGET_WORD.length) {
                     handleFinalWin();
                 } else {
                     updateUI();
                 }
-            } else { // Wrong letter
+            } else { 
                 handleLetterModeFailure(); 
             }
             return;
@@ -297,19 +282,20 @@ function initGameScene() {
         if (item.type.includes('obstacle')) {
             if (player.state.isShielded) {
                 player.state.isShielded = false; player.state.shieldTimer = 0;
-                createBurst(item.x, item.y, colors.shield); AudioManager.playSound('explode');
+                createBurst(item.x, item.y, colors.shield); 
+                if(window.AudioManager) AudioManager.playSound('explode');
                 items.splice(idx, 1);
             } else {
-                handleGameOver(); // Normal game over for obstacles
+                handleGameOver(); 
             }
             return;
         }
 
         if (item.type === 'collectible') {
             totalMemoryCollected += 5;
-            AudioManager.playSound('collect');
+            if(window.AudioManager) AudioManager.playSound('collect');
             createBurst(item.x, item.y, colors.collectible);
-            localStorage.setItem('lastRunMemory', totalMemoryCollected); // Save progress immediately
+            localStorage.setItem('lastRunMemory', totalMemoryCollected);
             updateUI();
             if (totalMemoryCollected >= MEMORY_TO_WIN) {
                 startLetterSequence();
@@ -317,8 +303,8 @@ function initGameScene() {
         } else {
             const stateKey = `is${item.type.charAt(0).toUpperCase() + item.type.slice(1)}Active`;
             player.state[stateKey] = true;
-            player.state[`${item.type}Timer`] = 300; // 5 seconds
-            AudioManager.playSound('powerup');
+            player.state[`${item.type}Timer`] = 300; 
+            if(window.AudioManager) AudioManager.playSound('powerup');
             const colorMap = { 'shield': colors.shield, 'magnet': colors.magnet, 'boost': colors.boost };
             createBurst(item.x, item.y, colorMap[item.type]);
         }
@@ -329,9 +315,9 @@ function initGameScene() {
     function setupEventListeners() { window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true); window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false); canvas.addEventListener('mousemove', e => { if ((gameState !== 'PLAYING' && gameState !== 'LETTER_MODE') || isTouchDevice) return; player.x = e.clientX - wrapper.getBoundingClientRect().left - player.width / 2; }); canvas.addEventListener('touchmove', e => { e.preventDefault(); if ((gameState !== 'PLAYING' && gameState !== 'LETTER_MODE')) return; player.x = e.touches[0].clientX - wrapper.getBoundingClientRect().left - player.width / 2; }, { passive: false }); startBtn.addEventListener('click', startGame); retryBtn.addEventListener('click', startGame); window.addEventListener('resize', resizeCanvas); }
     function updatePlayer() { if(player.shootCooldown > 0) player.shootCooldown--; player.currentFireRate = player.state.isBoostActive ? player.baseFireRate / 2 : player.baseFireRate; Object.keys(player.state).forEach(key => { if (key.endsWith('Timer') && player.state[key] > 0) { player.state[key]--; if (player.state[key] <= 0) { const base = key.replace('Timer', ''); player.state[`is${base.charAt(0).toUpperCase() + base.slice(1)}Active`] = false; } } }); }
     function handlePlayerInput() { let moveDir = effects.isControlsInverted ? -1 : 1; if (keys['arrowleft'] || keys['a']) player.x -= player.speed * moveDir; if (keys['arrowright'] || keys['d']) player.x += player.speed * moveDir; if (player.x < 0) player.x = 0; if (player.x + player.width > canvas.width) player.x = canvas.width - player.width; if ((keys[' '] || isTouchDevice) && player.shootCooldown <= 0) { shoot(); player.shootCooldown = player.currentFireRate; } }
-    function shoot() { const w = 4 * scaleRatio, h = 15 * scaleRatio; bullets.push({ x: player.x + player.width / 2 - w / 2, y: player.y, width: w, height: h, speed: 10 * scaleRatio }); AudioManager.playSound('shoot'); }
+    function shoot() { const w = 4 * scaleRatio, h = 15 * scaleRatio; bullets.push({ x: player.x + player.width / 2 - w / 2, y: player.y, width: w, height: h, speed: 10 * scaleRatio }); if(window.AudioManager) AudioManager.playSound('shoot'); }
     function updateItems() { for (let i = items.length - 1; i >= 0; i--) { const item = items[i]; if (!item) continue; if (item.type === 'obstacle_homing') { const hS = 0.005; item.x += (player.x + player.width / 2 - item.x) * hS; } if (player.state.isMagnetActive && item.type === 'collectible') { const dx = (player.x + player.width / 2) - item.x, dy = player.y - item.y, d = Math.sqrt(dx * dx + dy * dy); if (d < 200 * scaleRatio) { item.x += dx / d * 4 * scaleRatio; item.y += dy / d * 4 * scaleRatio; } } if (item.hitTimer > 0) item.hitTimer--; item.y += item.speed; if (item.y > canvas.height + 40 * scaleRatio) items.splice(i, 1); } }
-    function checkCollisions() { for (let i = items.length - 1; i >= 0; i--) { if (items[i] && isColliding(player, items[i])) handlePlayerItemCollision(items[i], i); } for (let i = bullets.length - 1; i >= 0; i--) { if (!bullets[i]) continue; for (let j = items.length - 1; j >= 0; j--) { const item = items[j]; if (!item) continue; if (item.type.includes('obstacle') && isColliding(bullets[i], item)) { item.health--; item.hitTimer = 10; bullets.splice(i, 1); if (item.health <= 0) { createBurst(item.x, item.y, '#ccc'); AudioManager.playSound('explode'); runScore += 50; items.splice(j, 1); } break; } } } }
+    function checkCollisions() { for (let i = items.length - 1; i >= 0; i--) { if (items[i] && isColliding(player, items[i])) handlePlayerItemCollision(items[i], i); } for (let i = bullets.length - 1; i >= 0; i--) { if (!bullets[i]) continue; for (let j = items.length - 1; j >= 0; j--) { const item = items[j]; if (!item) continue; if (item.type.includes('obstacle') && isColliding(bullets[i], item)) { item.health--; item.hitTimer = 10; bullets.splice(i, 1); if (item.health <= 0) { createBurst(item.x, item.y, '#ccc'); if(window.AudioManager) AudioManager.playSound('explode'); runScore += 50; items.splice(j, 1); } break; } } } }
     function updateEffects() { if (effects.distortionTimer > 0) { effects.distortionTimer--; if (effects.distortionTimer <= 0) { wrapper.classList.remove('fx-blur'); effects.isControlsInverted = false; } } }
     function updateBullets() { for (let i = bullets.length - 1; i >= 0; i--) { bullets[i].y -= bullets[i].speed; if (bullets[i].y < -10 * scaleRatio) bullets.splice(i, 1); } }
     function updateParticles() { for (let i = particles.length - 1; i >= 0; i--) { const p = particles[i]; p.life--; p.x += p.vx; p.y += p.vy; if (p.life <= 0) particles.splice(i, 1); } }

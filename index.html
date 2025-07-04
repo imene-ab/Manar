@@ -75,8 +75,10 @@
             scenes: ['intro', 'level1', 'level2', 'level3', 'game', 'final', 'end'],
             currentSceneIndex: -1,
             init: function() {
-                GlitchManager.init();
-                AudioManager.startSoundtrack();
+                // Assuming you might have these external scripts
+                // If not, these calls will harmlessly do nothing if the managers aren't defined
+                if(window.GlitchManager) GlitchManager.init();
+                if(window.AudioManager) AudioManager.startSoundtrack();
                 this.next();
             },
             load: function(sceneName) {
@@ -133,8 +135,8 @@
                     if (progress >= requiredTime) {
                         clearInterval(holdInterval);
                         startBtn.style.pointerEvents = 'none';
-                        GlitchManager.trigger();
-                        AudioManager.playSound('transition');
+                        if(window.GlitchManager) GlitchManager.trigger();
+                        if(window.AudioManager) AudioManager.playSound('transition');
                         document.body.classList.add('fade-out');
                         setTimeout(SceneManager.next.bind(SceneManager), 1000);
                     }
@@ -149,19 +151,10 @@
                     progressBar.style.transition = 'width 0.1s linear'
                 }, 300);
             };
-            promise1.addEventListener('change', () => {
-                AudioManager.playSound('promise');
-                checkPromises()
-            });
-            promise2.addEventListener('change', () => {
-                AudioManager.playSound('promise');
-                checkPromises()
-            });
+            promise1.addEventListener('change', () => { if(window.AudioManager) AudioManager.playSound('promise'); checkPromises() });
+            promise2.addEventListener('change', () => { if(window.AudioManager) AudioManager.playSound('promise'); checkPromises() });
             startBtn.addEventListener('mousedown', startHold);
-            startBtn.addEventListener('touchstart', e => {
-                e.preventDefault();
-                startHold(e)
-            });
+            startBtn.addEventListener('touchstart', e => { e.preventDefault(); startHold(e) });
             document.body.addEventListener('mouseup', stopHold);
             document.body.addEventListener('touchend', stopHold);
         };
@@ -173,13 +166,13 @@
             const goToNextLevel = () => {
                 continueBtn.style.pointerEvents = 'none';
                 document.body.classList.add('fade-out');
-                GlitchManager.trigger();
-                AudioManager.playSound('transition');
+                if(window.GlitchManager) GlitchManager.trigger();
+                if(window.AudioManager) AudioManager.playSound('transition');
                 setTimeout(SceneManager.next.bind(SceneManager), 1000)
             };
             setTimeout(() => document.querySelector('.profile-fade').style.opacity = '1', 500);
             setTimeout(() => {
-                typewriter(document.getElementById('narrative'), "La premiere fois tla9ina c'était dans un miroir, entre les rayons et les reflets. I was nervous… but my eyes fell on yours.", 50, () => continueBtn.classList.add('visible'))
+                if(window.typewriter) typewriter(document.getElementById('narrative'), "La premiere fois tla9ina c'était dans un miroir, entre les rayons et les reflets. I was nervous… but my eyes fell on yours.", 50, () => continueBtn.classList.add('visible'))
             }, 1500);
             const startHold = () => {
                 if (!continueBtn.classList.contains('visible')) return;
@@ -200,10 +193,7 @@
                 setTimeout(() => progressBar.style.transition = 'width 0.1s linear', 300)
             };
             continueBtn.addEventListener('mousedown', startHold);
-            continueBtn.addEventListener('touchstart', e => {
-                e.preventDefault();
-                startHold()
-            });
+            continueBtn.addEventListener('touchstart', e => { e.preventDefault(); startHold() });
             document.body.addEventListener('mouseup', stopHold);
             document.body.addEventListener('touchend', stopHold);
         };
@@ -219,7 +209,7 @@
             let lineIndex = 0;
             function nextLine() {
                 if (lineIndex < storyLines.length) {
-                    typewriter(narrativeEl, storyLines[lineIndex], 40, () => {
+                    if(window.typewriter) typewriter(narrativeEl, storyLines[lineIndex], 40, () => {
                         lineIndex++;
                         setTimeout(nextLine, 1800)
                     })
@@ -234,8 +224,8 @@
             const goToNextLevel = () => {
                 continueBtn.style.pointerEvents = 'none';
                 document.body.classList.add('fade-out');
-                GlitchManager.trigger();
-                AudioManager.playSound('transition');
+                if(window.GlitchManager) GlitchManager.trigger();
+                if(window.AudioManager) AudioManager.playSound('transition');
                 setTimeout(SceneManager.next.bind(SceneManager), 1000)
             };
             const startHold = () => {
@@ -259,10 +249,7 @@
                 }, 300)
             };
             continueBtn.addEventListener('mousedown', startHold);
-            continueBtn.addEventListener('touchstart', e => {
-                e.preventDefault();
-                startHold()
-            });
+            continueBtn.addEventListener('touchstart', e => { e.preventDefault(); startHold() });
             document.body.addEventListener('mouseup', stopHold);
             document.body.addEventListener('touchend', stopHold);
         };
@@ -273,37 +260,13 @@
                 progressBar = document.getElementById('progress-bar'),
                 boyEl = document.getElementById('boy');
             let holdInterval, progress = 0, requiredHoldTime = 1800;
-            const storyLines = [{
-                text: 'It’s Thursday again…'
-            }, {
-                text: "Kount koul khetra koul khmis t3 examen.."
-            }, {
-                text: 'Ki nji kharja yediya yerjfou, I know he’ll be there.'
-            }, {
-                text: 'nkhrej w nhawes 3lik...'
-            }, {
-                text: 'mindak nel9ak jit',
-                action: () => boyEl.classList.add('fade-in')
-            }, {
-                text: 'nreyeh nchouf houwa machi houwa?'
-            }, {
-                text: 'Mais...?'
-            }, {
-                text: 'lyouma lkhmis when m coding this game manich nchofek...',
-                action: () => boyEl.classList.remove('fade-in')
-            }, {
-                text: "He's gone."
-            }, {
-                text: 'Had lkhetra nta roht...'
-            }, {
-                text: 'But ana reyeht hasla fhdk tekhmam, koul khmis nestanak even dok fla fac...'
-            }];
+            const storyLines = [{ text: 'It’s Thursday again…' }, { text: "Kount koul khetra koul khmis t3 examen.." }, { text: 'Ki nji kharja yediya yerjfou, I know he’ll be there.' }, { text: 'nkhrej w nhawes 3lik...' }, { text: 'mindak nel9ak jit', action: () => boyEl.classList.add('fade-in') }, { text: 'nreyeh nchouf houwa machi houwa?' }, { text: 'Mais...?' }, { text: 'lyouma lkhmis when m coding this game manich nchofek...', action: () => boyEl.classList.remove('fade-in') }, { text: "He's gone." }, { text: 'Had lkhetra nta roht...' }, { text: 'But ana reyeht hasla fhdk tekhmam, koul khmis nestanak even dok fla fac...' }];
             let lineIndex = 0;
             function nextLine() {
                 if (lineIndex < storyLines.length) {
                     const line = storyLines[lineIndex];
                     line.action?.();
-                    typewriter(narrativeEl, line.text, 45, () => {
+                    if(window.typewriter) typewriter(narrativeEl, line.text, 45, () => {
                         lineIndex++;
                         setTimeout(nextLine, 1800)
                     })
@@ -315,8 +278,8 @@
             const goToNextLevel = () => {
                 continueBtn.style.pointerEvents = 'none';
                 document.body.classList.add('fade-out');
-                GlitchManager.trigger(600);
-                AudioManager.playSound('transition');
+                if(window.GlitchManager) GlitchManager.trigger(600);
+                if(window.AudioManager) AudioManager.playSound('transition');
                 setTimeout(SceneManager.next.bind(SceneManager), 1000)
             };
             const startHold = () => {
@@ -338,10 +301,7 @@
                 setTimeout(() => progressBar.style.transition = 'width 0.1s linear', 300)
             };
             continueBtn.addEventListener('mousedown', startHold);
-            continueBtn.addEventListener('touchstart', e => {
-                e.preventDefault();
-                startHold()
-            });
+            continueBtn.addEventListener('touchstart', e => { e.preventDefault(); startHold() });
             document.body.addEventListener('mouseup', stopHold);
             document.body.addEventListener('touchend', stopHold);
         };
@@ -350,10 +310,8 @@
             initGameScene()
         };
         
-        // --- MODIFIED SCENE LOGIC ---
         SceneManager.logic.final = () => {
-            //AudioManager.setSoundtrackPitch(1.2); // REMOVED: This was causing the speed up. Set to 1.0 for normal speed.
-            AudioManager.setSoundtrackPitch(1.0); 
+            if(window.AudioManager) AudioManager.setSoundtrackPitch(1.0); 
 
             const message = "hy, hadi ana again imene bsh for the last time m talking to u from this game... u would say hadi 3lh rah samta hhh but sede9ni mchi ana, 3lbli fatou 3ans bsh jwzthom w deyra fbali beli f la fin ha nkounou kifkif 93dt haka maamna bhad l3fsa js dert fbali beli rak nasini cheft hadak lcadre li weritholek hdk nhar? 3lblk mchi ana li khabitou had l3wam kaml mama hiya li khabatou khetra 3la khetra kount nejbdelha 3lik w nchkor fik 9odamha kount daymen dayrtek afdal insan fhyaty kount ned3i tkoun hlali,\n ki b3tlk l3am li fat 9otli mnhkich m3a lbnat ana 9olt rah nawini lhlal blk chghl kount deymn nel9alk seba bch tryh fi 9elbi l3fsa li 9otli 3liha beli koulech fl39l hadik ki twalf bnadem mchi ki theb bnadem en tt cas nta lwl li hbitk w 9olthlk ms nta mchi kifkif 3ndk ana kfh kount nchoufek w nta kfh deyrni mchi kifkif kml, \n 3yit 2yit surtt hd lyamat menhar 9otli beli sah cbn w ana 9elbi ywj3 fiya nchoufek partout nhws 3lik fkol jiha alors la hadik lidee t3 kayna wehda fhyatek....\n m9drtch ndirha frassi ms dok ha ndirha frassi w netmcha biha mrhch tkoun sahla ms dok yfoutou 3ans, 4ans wela 10ans mrhch nzid nban fhyatek a vie w binatna smah denya w akhra hadi akhir haja ndirha 3ljlk w last step 3endi w 3endk w hnaya tekhles lhistoire.\n thanks for listening :). fi amani allah abderezzak.";
             const letterContainer = document.getElementById('letter');
@@ -364,19 +322,16 @@
                     letterContainer.appendChild(document.createElement('br'));
                 } else {
                     const span = document.createElement('span');
-                    // --- THIS IS THE FIX ---
-                    // Using a regular space ' ' instead of a non-breaking space ' '
-                    // This allows the text to wrap correctly on small screens.
                     span.innerHTML = char; 
                     span.style.animationDelay = `${delay}s`;
-                    if (char !== ' ') { // Only increment delay for non-space characters
+                    if (char !== ' ') { 
                         delay += .05;
                     }
                     letterContainer.appendChild(span);
                 }
             });
 
-            const totalAnimationTime = delay * 1000 + 6000;
+            const totalAnimationTime = delay * 1000 + 20000;
             setTimeout(() => {
                 document.body.classList.add('fade-out');
                 setTimeout(SceneManager.next.bind(SceneManager), 2000)
@@ -384,12 +339,11 @@
         };
 
         SceneManager.logic.end = () => {
-            localStorage.setItem('theStoryHasEnded', 'true'); // Set a flag so it can't be replayed
-            stopBackgroundAnimation();
-            EchoManager.init();
+            localStorage.setItem('theStoryHasEnded', 'true');
+            if (window.stopBackgroundAnimation) stopBackgroundAnimation();
+            if (window.EchoManager) EchoManager.init();
         };
 
-        // Start the whole thing
         SceneManager.init();
     });
   </script>
