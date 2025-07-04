@@ -93,6 +93,15 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
 #cinematic-overlay { display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 2vmin; font-family: 'Playfair Display', serif; font-weight: bold; color: transparent; }
 .cinematic-letter { position: relative; font-size: 20vmin; text-shadow: 0 0 25px var(--glow-color); opacity: 0; animation: reveal-letter 3s cubic-bezier(0.19, 1, 0.22, 1) forwards; }
 .particle-canvas { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200%; height: 200%; z-index: -1; }
+
+/* --- NEW CSS RULE START --- */
+.cinematic-letter.solid {
+  color: var(--white); /* Override the parent's transparent color to make text visible */
+  text-shadow: none;     /* Remove the glow effect */
+  transition: color 0.5s ease-out, text-shadow 0.5s ease-out; /* Add a smooth effect */
+}
+/* --- NEW CSS RULE END --- */
+
 .cinematic-letter.break { animation: break-apart 2s forwards; animation-delay: 0s !important; }
 @keyframes reveal-letter { 0% { opacity: 0; transform: scale(0.8); } 40% { opacity: 1; } 100% { opacity: 1; transform: scale(1); } }
 @keyframes break-apart { to { opacity: 0; text-shadow: none; transform: translate(var(--tx, 0), var(--ty, 0)) rotate(var(--r, 0)) scale(0.5); } }
