@@ -53,10 +53,11 @@
       <canvas id="gameCanvas"></canvas>
       <div id="start-screen" class="overlay">
         <h1>The Last Run</h1>
+        <!-- MODIFIED: Instructions are now more mysterious -->
         <p class="description">
-          Spell her name to piece together the final message.<br><br>
-          Collect the correct letters to spell <strong class="collect-color">MANAR</strong>.<br>
-          Avoid or shoot the <strong class="avoid-color">incorrect letters</strong>.
+          The final message is encoded. Piece it together.<br><br>
+          Collect the <strong class="collect-color">Correct Letters</strong> in order.<br>
+          Avoid or shoot the <strong class="avoid-color">incorrect ones</strong>.
         </p>
         <div class="instructions"><strong>ARROW KEYS / A / D / SPACE</strong> or <strong>TOUCH/DRAG</strong></div>
         <button id="start-btn">Begin Run</button>
@@ -90,7 +91,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         window.SceneManager = {
             root: document.getElementById('app-root'),
-            // MODIFIED: Restored the full narrative scene flow
             scenes: ['intro', 'level1', 'level2', 'level3', 'game', 'final', 'end'],
             currentSceneIndex: -1,
             init: function() {
@@ -176,7 +176,6 @@
             document.body.addEventListener('touchend', stopHold);
         };
         
-        // RESTORED NARRATIVE SCENE LOGIC
         SceneManager.logic.level1 = () => {
             const continueBtn = document.getElementById('continue-btn'), progressBar = document.getElementById('progress-bar');
             let holdInterval, progress = 0, requiredHoldTime = 1200;

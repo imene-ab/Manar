@@ -72,7 +72,6 @@ function initGameScene() {
         AudioManager.playSound('transition');
         AudioManager.setSoundtrackPitch(1.0);
         
-        // MODIFIED: Start directly in LETTER_MODE
         gameState = 'LETTER_MODE';
         resetRunState();
 
@@ -91,10 +90,9 @@ function initGameScene() {
         player.y = canvas.height - (60 * scaleRatio);
         Object.keys(player.state).forEach(key => player.state[key] = key.endsWith('Timer') ? 0 : false);
         
-        spawnTimer = 50; // Faster start
+        spawnTimer = 50; 
         effects.distortionTimer = 0;
         
-        // MODIFIED: Hide fragment-related UI
         document.getElementById('progress-text').style.display = 'none';
         if (progressBar) progressBar.parentElement.style.display = 'none';
         scoreDisplay.style.display = 'block';
@@ -117,11 +115,11 @@ function initGameScene() {
     function handleLetterModeFailure() {
         AudioManager.playSound('distort');
         GlitchManager.trigger(300);
-        currentLetterIndex = 0; // Reset progress on failure
+        currentLetterIndex = 0; 
         items = [];
         bullets = [];
         spawnTimer = 50;
-        runScore = 0; // Optional: reset score on failure for a tougher challenge
+        runScore = 0; 
         updateUI();
     }
 
@@ -174,7 +172,6 @@ function initGameScene() {
         }, 600);
     }
     
-    // MODIFIED: spawnItems logic simplified as game always starts in LETTER_MODE
     function spawnItems() { 
         spawnTimer--; 
         if (spawnTimer > 0) return; 
@@ -182,8 +179,7 @@ function initGameScene() {
         const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; 
         let letterToSpawn; 
         
-        // Spawn the correct letter more often
-        if (Math.random() < 0.40) { // Increased chance for correct letter
+        if (Math.random() < 0.40) { 
             letterToSpawn = TARGET_WORD[currentLetterIndex]; 
         } else { 
             let randomChar; 
@@ -193,7 +189,6 @@ function initGameScene() {
             letterToSpawn = randomChar; 
         } 
         items.push(createLetterItem(letterToSpawn)); 
-        // FASTER SPAWNING
         spawnTimer = Math.max(20, 45 - (currentLetterIndex * 5)); 
     }
     
@@ -206,14 +201,13 @@ function initGameScene() {
             y: -50 * scaleRatio, 
             width: 40 * scaleRatio, 
             height: 40 * scaleRatio, 
-            // FASTER FALLING SPEED
             speed: (Math.random() * 2.0 + 2.5) * scaleRatio, 
         }; 
         item.draw = (ctx) => { 
             ctx.font = `bold ${item.width * 1.2}px 'Roboto Mono', monospace`; 
             ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; 
             if (isCorrect) { 
-                ctx.fillStyle = colors.magnet; // Make correct letters stand out more
+                ctx.fillStyle = colors.magnet; 
                 ctx.shadowColor = colors.magnet; ctx.shadowBlur = 15; 
             } else { 
                 ctx.fillStyle = colors.obstacle; ctx.shadowBlur = 0; 
@@ -227,7 +221,7 @@ function initGameScene() {
 
     function handlePlayerItemCollision(item, idx) {
         if (item.type.startsWith('letter')) {
-            items.splice(idx, 1); // Remove letter regardless of correct or wrong
+            items.splice(idx, 1); 
             if (item.letter === TARGET_WORD[currentLetterIndex]) { 
                 currentLetterIndex++;
                 AudioManager.playSound('promise');
@@ -242,7 +236,6 @@ function initGameScene() {
             return;
         }
 
-        // Obstacles (if any are ever added back) or wrong letters
         if (player.state.isShielded) {
             player.state.isShielded = false; player.state.shieldTimer = 0;
             createBurst(item.x, item.y, colors.shield); 
@@ -253,12 +246,16 @@ function initGameScene() {
         }
     }
     
+    // --- MODIFIED ---
+    // This function now only shows the current target letter, preserving the mystery.
     function updateUI() { 
         if (gameState === 'LETTER_MODE') { 
             const lettersFound = TARGET_WORD.slice(0, currentLetterIndex); 
-            const currentTarget = TARGET_WORD.substring(currentLetterIndex); // Show remaining letters
-            const formattedTarget = `<strong style="color:${colors.magnet}">${currentTarget.charAt(0)}</strong>` + `<span style="opacity: 0.5;">${currentTarget.substring(1)}</span>`
-            targetLetterDisplay.innerHTML = `Target: ${formattedTarget}`; 
+            const currentTarget = TARGET_WORD[currentLetterIndex];
+            
+            // Only display the single, current target letter.
+            targetLetterDisplay.innerHTML = `Target: <strong style="color:${colors.magnet}">${currentTarget}</strong>`; 
+            
             scoreDisplay.innerHTML = `Found: <span class="collect-color">${lettersFound}</span>`; 
         } 
         
@@ -270,6 +267,7 @@ function initGameScene() {
             powerupTimersContainer.innerHTML = tHTML; 
         } 
     }
+    
     function setupEventListeners() { window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true); window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false); canvas.addEventListener('mousemove', e => { if ((gameState !== 'LETTER_MODE') || isTouchDevice) return; player.x = e.clientX - wrapper.getBoundingClientRect().left - player.width / 2; }); canvas.addEventListener('touchmove', e => { e.preventDefault(); if ((gameState !== 'LETTER_MODE')) return; player.x = e.touches[0].clientX - wrapper.getBoundingClientRect().left - player.width / 2; }, { passive: false }); startBtn.addEventListener('click', startGame); retryBtn.addEventListener('click', startGame); window.addEventListener('resize', resizeCanvas); }
     function updatePlayer() { if(player.shootCooldown > 0) player.shootCooldown--; player.currentFireRate = player.state.isBoostActive ? player.baseFireRate / 2 : player.baseFireRate; Object.keys(player.state).forEach(key => { if (key.endsWith('Timer') && player.state[key] > 0) { player.state[key]--; if (player.state[key] <= 0) { const base = key.replace('Timer', ''); player.state[`is${base.charAt(0).toUpperCase() + base.slice(1)}Active`] = false; } } }); }
     function handlePlayerInput() { let moveDir = effects.isControlsInverted ? -1 : 1; if (keys['arrowleft'] || keys['a']) player.x -= player.speed * moveDir; if (keys['arrowright'] || keys['d']) player.x += player.speed * moveDir; if (player.x < 0) player.x = 0; if (player.x + player.width > canvas.width) player.x = canvas.width - player.width; if ((keys[' '] || isTouchDevice) && player.shootCooldown <= 0) { shoot(); player.shootCooldown = player.currentFireRate; } }
