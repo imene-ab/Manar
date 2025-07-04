@@ -53,7 +53,7 @@ function initGameScene() {
         setupEventListeners(); 
         resizeCanvas(); 
         gameLoop(); 
-        if(window.AudioManager) AudioManager.setSoundtrackPitch(1.0); 
+        AudioManager.setSoundtrackPitch(1.0); 
     }
     
     function gameLoop() { 
@@ -72,11 +72,9 @@ function initGameScene() {
     
     function startGame() {
         if (gameState === 'PLAYING' || gameState === 'LETTER_MODE') return;
-        if(window.GlitchManager) GlitchManager.trigger(200);
-        if(window.AudioManager) {
-            AudioManager.playSound('transition');
-            AudioManager.setSoundtrackPitch(1.0);
-        }
+        GlitchManager.trigger(200);
+        AudioManager.playSound('transition');
+        AudioManager.setSoundtrackPitch(1.0);
         
         gameState = 'PLAYING';
         totalMemoryCollected = Number(localStorage.getItem('lastRunMemory')) || 0;
@@ -92,8 +90,7 @@ function initGameScene() {
         items = [];
         bullets = [];
         particles = [];
-        currentLetterIndex = 0;
-
+        currentLetterIndex = 0; 
         player.x = canvas.width / 2 - player.width / 2;
         player.y = canvas.height - (60 * scaleRatio);
         Object.keys(player.state).forEach(key => player.state[key] = key.endsWith('Timer') ? 0 : false);
@@ -109,10 +106,10 @@ function initGameScene() {
     function handleGameOver() {
         if (gameState === 'GAMEOVER') return; 
         gameState = 'GAMEOVER';
-        if(window.AudioManager) AudioManager.playSound('damage');
+        AudioManager.playSound('damage');
         createBurst(player.x + player.width / 2, player.y + player.height / 2, colors.white, 50);
 
-        totalMemoryCollected = Math.max(0, totalMemoryCollected - 20); 
+        totalMemoryCollected = Math.max(0, totalMemoryCollected - 20);
         localStorage.setItem('lastRunMemory', totalMemoryCollected);
         
         uiContainer.classList.remove('visible');
@@ -125,10 +122,10 @@ function initGameScene() {
     }
     
     function handleLetterModeFailure() {
-        if(window.AudioManager) AudioManager.playSound('distort');
-        if(window.GlitchManager) GlitchManager.trigger(300);
+        AudioManager.playSound('distort');
+        GlitchManager.trigger(300);
         currentLetterIndex = 0;
-        items = []; 
+        items = [];
         bullets = [];
         spawnTimer = 50;
         updateUI();
@@ -136,7 +133,7 @@ function initGameScene() {
 
     function startLetterSequence() {
         gameState = 'LETTER_MODE';
-        if(window.AudioManager) AudioManager.playSound('powerup');
+        AudioManager.playSound('powerup');
         items = [];
         spawnTimer = 50;
         currentLetterIndex = 0;
@@ -154,41 +151,41 @@ function initGameScene() {
             widescreenContainer.classList.add('visible');
             cinematicOverlay.innerHTML = '';
             TARGET_WORD.split('').forEach((char, index) => {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'cinematic-letter';
-                wrapper.style.animationDelay = `${index * 0.4 + 1}s`;
+                const wrapperEl = document.createElement('div');
+                wrapperEl.className = 'cinematic-letter';
+                wrapperEl.style.animationDelay = `${index * 0.4 + 1}s`;
                 const textSpan = document.createElement('span');
                 textSpan.textContent = char;
                 const particleCanvas = document.createElement('canvas');
                 particleCanvas.className = 'particle-canvas';
-                wrapper.appendChild(textSpan);
-                wrapper.appendChild(particleCanvas);
-                cinematicOverlay.appendChild(wrapper);
-                const ps = new ParticleSystem(particleCanvas, wrapper);
+                wrapperEl.appendChild(textSpan);
+                wrapperEl.appendChild(particleCanvas);
+                cinematicOverlay.appendChild(wrapperEl);
+                const ps = new ParticleSystem(particleCanvas, wrapperEl);
                 ps.start(3500);
             });
 
             setTimeout(() => {
-                if(window.AudioManager) AudioManager.playSound('promise');
+                AudioManager.playSound('promise');
                 cinematicOverlay.querySelectorAll('.cinematic-letter').forEach(span => {
                     span.classList.add('solid');
                 });
             }, 4000);
-
+            
             setTimeout(() => {
-                if(window.AudioManager) AudioManager.playSound('explode');
+                AudioManager.playSound('explode');
                 cinematicOverlay.querySelectorAll('.cinematic-letter').forEach(span => {
                     span.style.setProperty('--tx', `${(Math.random() - 0.5) * 80}vw`);
                     span.style.setProperty('--ty', `${(Math.random() - 0.5) * 80}vh`);
                     span.style.setProperty('--r', `${(Math.random() - 0.5) * 720}deg`);
                     span.classList.add('break');
                 });
-            }, 7000); 
+            }, 7000);
             
             setTimeout(() => {
                 widescreenContainer.style.opacity = '0';
                 setTimeout(() => {
-                    if (window.SceneManager) window.SceneManager.next();
+                    SceneManager.next();
                 }, 1000);
             }, 9000);
         }, 600);
@@ -266,7 +263,7 @@ function initGameScene() {
         if (item.type.startsWith('letter')) {
             if (item.letter === TARGET_WORD[currentLetterIndex]) { 
                 currentLetterIndex++;
-                if(window.AudioManager) AudioManager.playSound('promise');
+                AudioManager.playSound('promise');
                 items.splice(idx, 1);
                 if (currentLetterIndex >= TARGET_WORD.length) {
                     handleFinalWin();
@@ -283,17 +280,17 @@ function initGameScene() {
             if (player.state.isShielded) {
                 player.state.isShielded = false; player.state.shieldTimer = 0;
                 createBurst(item.x, item.y, colors.shield); 
-                if(window.AudioManager) AudioManager.playSound('explode');
+                AudioManager.playSound('explode');
                 items.splice(idx, 1);
             } else {
-                handleGameOver(); 
+                handleGameOver();
             }
             return;
         }
 
         if (item.type === 'collectible') {
             totalMemoryCollected += 5;
-            if(window.AudioManager) AudioManager.playSound('collect');
+            AudioManager.playSound('collect');
             createBurst(item.x, item.y, colors.collectible);
             localStorage.setItem('lastRunMemory', totalMemoryCollected);
             updateUI();
@@ -303,8 +300,8 @@ function initGameScene() {
         } else {
             const stateKey = `is${item.type.charAt(0).toUpperCase() + item.type.slice(1)}Active`;
             player.state[stateKey] = true;
-            player.state[`${item.type}Timer`] = 300; 
-            if(window.AudioManager) AudioManager.playSound('powerup');
+            player.state[`${item.type}Timer`] = 300;
+            AudioManager.playSound('powerup');
             const colorMap = { 'shield': colors.shield, 'magnet': colors.magnet, 'boost': colors.boost };
             createBurst(item.x, item.y, colorMap[item.type]);
         }
@@ -315,9 +312,9 @@ function initGameScene() {
     function setupEventListeners() { window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true); window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false); canvas.addEventListener('mousemove', e => { if ((gameState !== 'PLAYING' && gameState !== 'LETTER_MODE') || isTouchDevice) return; player.x = e.clientX - wrapper.getBoundingClientRect().left - player.width / 2; }); canvas.addEventListener('touchmove', e => { e.preventDefault(); if ((gameState !== 'PLAYING' && gameState !== 'LETTER_MODE')) return; player.x = e.touches[0].clientX - wrapper.getBoundingClientRect().left - player.width / 2; }, { passive: false }); startBtn.addEventListener('click', startGame); retryBtn.addEventListener('click', startGame); window.addEventListener('resize', resizeCanvas); }
     function updatePlayer() { if(player.shootCooldown > 0) player.shootCooldown--; player.currentFireRate = player.state.isBoostActive ? player.baseFireRate / 2 : player.baseFireRate; Object.keys(player.state).forEach(key => { if (key.endsWith('Timer') && player.state[key] > 0) { player.state[key]--; if (player.state[key] <= 0) { const base = key.replace('Timer', ''); player.state[`is${base.charAt(0).toUpperCase() + base.slice(1)}Active`] = false; } } }); }
     function handlePlayerInput() { let moveDir = effects.isControlsInverted ? -1 : 1; if (keys['arrowleft'] || keys['a']) player.x -= player.speed * moveDir; if (keys['arrowright'] || keys['d']) player.x += player.speed * moveDir; if (player.x < 0) player.x = 0; if (player.x + player.width > canvas.width) player.x = canvas.width - player.width; if ((keys[' '] || isTouchDevice) && player.shootCooldown <= 0) { shoot(); player.shootCooldown = player.currentFireRate; } }
-    function shoot() { const w = 4 * scaleRatio, h = 15 * scaleRatio; bullets.push({ x: player.x + player.width / 2 - w / 2, y: player.y, width: w, height: h, speed: 10 * scaleRatio }); if(window.AudioManager) AudioManager.playSound('shoot'); }
+    function shoot() { const w = 4 * scaleRatio, h = 15 * scaleRatio; bullets.push({ x: player.x + player.width / 2 - w / 2, y: player.y, width: w, height: h, speed: 10 * scaleRatio }); AudioManager.playSound('shoot'); }
     function updateItems() { for (let i = items.length - 1; i >= 0; i--) { const item = items[i]; if (!item) continue; if (item.type === 'obstacle_homing') { const hS = 0.005; item.x += (player.x + player.width / 2 - item.x) * hS; } if (player.state.isMagnetActive && item.type === 'collectible') { const dx = (player.x + player.width / 2) - item.x, dy = player.y - item.y, d = Math.sqrt(dx * dx + dy * dy); if (d < 200 * scaleRatio) { item.x += dx / d * 4 * scaleRatio; item.y += dy / d * 4 * scaleRatio; } } if (item.hitTimer > 0) item.hitTimer--; item.y += item.speed; if (item.y > canvas.height + 40 * scaleRatio) items.splice(i, 1); } }
-    function checkCollisions() { for (let i = items.length - 1; i >= 0; i--) { if (items[i] && isColliding(player, items[i])) handlePlayerItemCollision(items[i], i); } for (let i = bullets.length - 1; i >= 0; i--) { if (!bullets[i]) continue; for (let j = items.length - 1; j >= 0; j--) { const item = items[j]; if (!item) continue; if (item.type.includes('obstacle') && isColliding(bullets[i], item)) { item.health--; item.hitTimer = 10; bullets.splice(i, 1); if (item.health <= 0) { createBurst(item.x, item.y, '#ccc'); if(window.AudioManager) AudioManager.playSound('explode'); runScore += 50; items.splice(j, 1); } break; } } } }
+    function checkCollisions() { for (let i = items.length - 1; i >= 0; i--) { if (items[i] && isColliding(player, items[i])) handlePlayerItemCollision(items[i], i); } for (let i = bullets.length - 1; i >= 0; i--) { if (!bullets[i]) continue; for (let j = items.length - 1; j >= 0; j--) { const item = items[j]; if (!item) continue; if (item.type.includes('obstacle') && isColliding(bullets[i], item)) { item.health--; item.hitTimer = 10; bullets.splice(i, 1); if (item.health <= 0) { createBurst(item.x, item.y, '#ccc'); AudioManager.playSound('explode'); runScore += 50; items.splice(j, 1); } break; } } } }
     function updateEffects() { if (effects.distortionTimer > 0) { effects.distortionTimer--; if (effects.distortionTimer <= 0) { wrapper.classList.remove('fx-blur'); effects.isControlsInverted = false; } } }
     function updateBullets() { for (let i = bullets.length - 1; i >= 0; i--) { bullets[i].y -= bullets[i].speed; if (bullets[i].y < -10 * scaleRatio) bullets.splice(i, 1); } }
     function updateParticles() { for (let i = particles.length - 1; i >= 0; i--) { const p = particles[i]; p.life--; p.x += p.vx; p.y += p.vy; if (p.life <= 0) particles.splice(i, 1); } }

@@ -67,18 +67,23 @@
   </template>
   <template id="template-end"></template>
   
-  <script src="background.js"></script><script src="effects.js"></script><script src="audio.js"></script><script src="storyteller.js"></script><script src="game.js"></script>
+  <!-- The order of these scripts matters -->
+  <script src="background.js"></script>
+  <script src="effects.js"></script>
+  <script src="audio.js"></script>
+  <script src="storyteller.js"></script>
+  <script src="game.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // --- THIS SCRIPT BLOCK IS FULLY CORRECTED ---
         window.SceneManager = {
             root: document.getElementById('app-root'),
             scenes: ['intro', 'level1', 'level2', 'level3', 'game', 'final', 'end'],
             currentSceneIndex: -1,
             init: function() {
-                // Assuming you might have these external scripts
-                // If not, these calls will harmlessly do nothing if the managers aren't defined
-                if(window.GlitchManager) GlitchManager.init();
-                if(window.AudioManager) AudioManager.startSoundtrack();
+                // Direct calls - This assumes GlitchManager and AudioManager are defined in their scripts
+                GlitchManager.init();
+                AudioManager.startSoundtrack();
                 this.next();
             },
             load: function(sceneName) {
@@ -135,8 +140,8 @@
                     if (progress >= requiredTime) {
                         clearInterval(holdInterval);
                         startBtn.style.pointerEvents = 'none';
-                        if(window.GlitchManager) GlitchManager.trigger();
-                        if(window.AudioManager) AudioManager.playSound('transition');
+                        GlitchManager.trigger();
+                        AudioManager.playSound('transition');
                         document.body.classList.add('fade-out');
                         setTimeout(SceneManager.next.bind(SceneManager), 1000);
                     }
@@ -151,8 +156,8 @@
                     progressBar.style.transition = 'width 0.1s linear'
                 }, 300);
             };
-            promise1.addEventListener('change', () => { if(window.AudioManager) AudioManager.playSound('promise'); checkPromises() });
-            promise2.addEventListener('change', () => { if(window.AudioManager) AudioManager.playSound('promise'); checkPromises() });
+            promise1.addEventListener('change', () => { AudioManager.playSound('promise'); checkPromises(); });
+            promise2.addEventListener('change', () => { AudioManager.playSound('promise'); checkPromises(); });
             startBtn.addEventListener('mousedown', startHold);
             startBtn.addEventListener('touchstart', e => { e.preventDefault(); startHold(e) });
             document.body.addEventListener('mouseup', stopHold);
@@ -166,13 +171,13 @@
             const goToNextLevel = () => {
                 continueBtn.style.pointerEvents = 'none';
                 document.body.classList.add('fade-out');
-                if(window.GlitchManager) GlitchManager.trigger();
-                if(window.AudioManager) AudioManager.playSound('transition');
+                GlitchManager.trigger();
+                AudioManager.playSound('transition');
                 setTimeout(SceneManager.next.bind(SceneManager), 1000)
             };
             setTimeout(() => document.querySelector('.profile-fade').style.opacity = '1', 500);
             setTimeout(() => {
-                if(window.typewriter) typewriter(document.getElementById('narrative'), "La premiere fois tla9ina c'était dans un miroir, entre les rayons et les reflets. I was nervous… but my eyes fell on yours.", 50, () => continueBtn.classList.add('visible'))
+                typewriter(document.getElementById('narrative'), "La premiere fois tla9ina c'était dans un miroir, entre les rayons et les reflets. I was nervous… but my eyes fell on yours.", 50, () => continueBtn.classList.add('visible'))
             }, 1500);
             const startHold = () => {
                 if (!continueBtn.classList.contains('visible')) return;
@@ -209,7 +214,7 @@
             let lineIndex = 0;
             function nextLine() {
                 if (lineIndex < storyLines.length) {
-                    if(window.typewriter) typewriter(narrativeEl, storyLines[lineIndex], 40, () => {
+                    typewriter(narrativeEl, storyLines[lineIndex], 40, () => {
                         lineIndex++;
                         setTimeout(nextLine, 1800)
                     })
@@ -224,8 +229,8 @@
             const goToNextLevel = () => {
                 continueBtn.style.pointerEvents = 'none';
                 document.body.classList.add('fade-out');
-                if(window.GlitchManager) GlitchManager.trigger();
-                if(window.AudioManager) AudioManager.playSound('transition');
+                GlitchManager.trigger();
+                AudioManager.playSound('transition');
                 setTimeout(SceneManager.next.bind(SceneManager), 1000)
             };
             const startHold = () => {
@@ -266,7 +271,7 @@
                 if (lineIndex < storyLines.length) {
                     const line = storyLines[lineIndex];
                     line.action?.();
-                    if(window.typewriter) typewriter(narrativeEl, line.text, 45, () => {
+                    typewriter(narrativeEl, line.text, 45, () => {
                         lineIndex++;
                         setTimeout(nextLine, 1800)
                     })
@@ -278,8 +283,8 @@
             const goToNextLevel = () => {
                 continueBtn.style.pointerEvents = 'none';
                 document.body.classList.add('fade-out');
-                if(window.GlitchManager) GlitchManager.trigger(600);
-                if(window.AudioManager) AudioManager.playSound('transition');
+                GlitchManager.trigger(600);
+                AudioManager.playSound('transition');
                 setTimeout(SceneManager.next.bind(SceneManager), 1000)
             };
             const startHold = () => {
@@ -311,7 +316,7 @@
         };
         
         SceneManager.logic.final = () => {
-            if(window.AudioManager) AudioManager.setSoundtrackPitch(1.0); 
+            AudioManager.setSoundtrackPitch(1.0); 
 
             const message = "hy, hadi ana again imene bsh for the last time m talking to u from this game... u would say hadi 3lh rah samta hhh but sede9ni mchi ana, 3lbli fatou 3ans bsh jwzthom w deyra fbali beli f la fin ha nkounou kifkif 93dt haka maamna bhad l3fsa js dert fbali beli rak nasini cheft hadak lcadre li weritholek hdk nhar? 3lblk mchi ana li khabitou had l3wam kaml mama hiya li khabatou khetra 3la khetra kount nejbdelha 3lik w nchkor fik 9odamha kount daymen dayrtek afdal insan fhyaty kount ned3i tkoun hlali,\n ki b3tlk l3am li fat 9otli mnhkich m3a lbnat ana 9olt rah nawini lhlal blk chghl kount deymn nel9alk seba bch tryh fi 9elbi l3fsa li 9otli 3liha beli koulech fl39l hadik ki twalf bnadem mchi ki theb bnadem en tt cas nta lwl li hbitk w 9olthlk ms nta mchi kifkif 3ndk ana kfh kount nchoufek w nta kfh deyrni mchi kifkif kml, \n 3yit 2yit surtt hd lyamat menhar 9otli beli sah cbn w ana 9elbi ywj3 fiya nchoufek partout nhws 3lik fkol jiha alors la hadik lidee t3 kayna wehda fhyatek....\n m9drtch ndirha frassi ms dok ha ndirha frassi w netmcha biha mrhch tkoun sahla ms dok yfoutou 3ans, 4ans wela 10ans mrhch nzid nban fhyatek a vie w binatna smah denya w akhra hadi akhir haja ndirha 3ljlk w last step 3endi w 3endk w hnaya tekhles lhistoire.\n thanks for listening :). fi amani allah abderezzak.";
             const letterContainer = document.getElementById('letter');
@@ -341,7 +346,6 @@
         SceneManager.logic.end = () => {
             localStorage.setItem('theStoryHasEnded', 'true');
             if (window.stopBackgroundAnimation) stopBackgroundAnimation();
-            if (window.EchoManager) EchoManager.init();
         };
 
         SceneManager.init();
