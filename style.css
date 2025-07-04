@@ -52,25 +52,7 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
 .character { font-size: 4em; opacity: 0; transition: opacity 2s ease; margin: 20px 0; }
 .character.fade-in { opacity: 1 !important; }
 
-/* --- MODIFICATION START --- */
-#game-wrapper {
-  position: relative;
-  /* Base the size primarily on the viewport's height, ideal for portrait content */
-  height: 90vh;
-  /* Provide a max-width to prevent it from overflowing on tall, narrow mobile screens */
-  max-width: 95vw;
-  /* Also add an absolute maximum height for very large monitors */
-  max-height: 960px;
-  /* The aspect ratio forces the width to be calculated correctly from the height */
-  aspect-ratio: 9 / 16;
-  box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
-  border-radius: 16px;
-  overflow: hidden;
-  background-color: transparent;
-  transition: opacity 0.5s ease-out;
-}
-/* --- MODIFICATION END --- */
-
+#game-wrapper { position: relative; width: 100%; max-width: 720px; max-height: 95vh; aspect-ratio: 9 / 16; box-shadow: 0 0 60px rgba(0, 0, 0, 0.9); border-radius: 16px; overflow: hidden; background-color: transparent; transition: opacity 0.5s ease-out; }
 #gameCanvas { display: block; width: 100%; height: 100%; background-color: #000; }
 #game-wrapper .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(8, 8, 10, 0.85); backdrop-filter: blur(5px); z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; transition: opacity 0.5s ease; color: var(--white); }
 #game-wrapper .overlay.hidden { opacity: 0; pointer-events: none; }
@@ -139,7 +121,8 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
   .description { font-size: 1em; }
   .promise-label { font-size: 0.95em; }
   .profile-fade { width: 120px; height: 120px; }
-  /* The rule for #game-wrapper was here, it has been removed because the new main rule handles mobile screens automatically. */
+  /* Make game wrapper smaller on phones */
+  #game-wrapper { max-width: 95vw; }
 }
 
 body.scene-final {
