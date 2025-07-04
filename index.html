@@ -29,6 +29,18 @@
          Dir kitman cuz i used my fav song :)</label>
       </template>
 
+  <template id="template-level1">
+    <div class="level-container"><div class="profile-fade" style="background-image: url('assets/profile.jpeg');"></div><div class="story-text" id="narrative"></div><button class="hold-button" id="continue-btn"><div class="hold-button-progress" id="progress-bar"></div><span>Hold to Continue</span></button></div>
+  </template>
+
+  <template id="template-level2">
+    <div class="level-container"><div class="character" style="opacity:0; animation: pulse 2.s infinite; " id="mirror"><img src="assets/eye.png" alt="eye" style="width:120px; height:120px; border-radius:50%; opacity:0.9;" /></div><div class="story-text" id="narrative"></div><button class="hold-button" id="continue-btn"><div class="hold-button-progress" id="progress-bar"></div><span>Hold to Continue</span></button></div>
+  </template>
+
+  <template id="template-level3">
+      <div class="level-container"><div class="character" id="boy">👤</div><div class="story-text" id="narrative"></div><button class="hold-button" id="continue-btn"><div class="hold-button-progress" id="progress-bar"></div><span>Hold to Continue</span></button></div>
+  </template>
+  
   <template id="template-game">
     <div id="game-wrapper">
       <div id="ui-container">
@@ -44,7 +56,7 @@
         <p class="description">
           Spell her name to piece together the final message.<br><br>
           Collect the correct letters to spell <strong class="collect-color">MANAR</strong>.<br>
-          Avoid the <strong class="avoid-color">incorrect letters</strong>.
+          Avoid or shoot the <strong class="avoid-color">incorrect letters</strong>.
         </p>
         <div class="instructions"><strong>ARROW KEYS / A / D / SPACE</strong> or <strong>TOUCH/DRAG</strong></div>
         <button id="start-btn">Begin Run</button>
@@ -52,10 +64,10 @@
         <p class="footer-hint">dir kitman :)</p>
       </div>
       <div id="game-over-screen" class="overlay hidden">
-          <h1>Run Ended</h1>
-          <p class="final-score-label">Final Score</p>
-          <p id="final-score">0</p>
-          <button id="retry-btn">Retry Run</button>
+        <h1>Run Ended</h1>
+        <p class="final-score-label">Final Score</p>
+        <p id="final-score">0</p>
+        <button id="retry-btn">Retry Run</button>
       </div>
     </div>
   </template>
@@ -78,7 +90,8 @@
     document.addEventListener('DOMContentLoaded', () => {
         window.SceneManager = {
             root: document.getElementById('app-root'),
-            scenes: ['intro', 'game', 'final', 'end'],
+            // MODIFIED: Restored the full narrative scene flow
+            scenes: ['intro', 'level1', 'level2', 'level3', 'game', 'final', 'end'],
             currentSceneIndex: -1,
             init: function() {
                 GlitchManager.init();
@@ -163,8 +176,88 @@
             document.body.addEventListener('touchend', stopHold);
         };
         
+        // RESTORED NARRATIVE SCENE LOGIC
+        SceneManager.logic.level1 = () => {
+            const continueBtn = document.getElementById('continue-btn'), progressBar = document.getElementById('progress-bar');
+            let holdInterval, progress = 0, requiredHoldTime = 1200;
+            const goToNextLevel = () => {
+                continueBtn.style.pointerEvents = 'none';
+                document.body.classList.add('fade-out');
+                GlitchManager.trigger();
+                AudioManager.playSound('transition');
+                setTimeout(SceneManager.next.bind(SceneManager), 1000)
+            };
+            setTimeout(() => document.querySelector('.profile-fade').style.opacity = '1', 500);
+            setTimeout(() => {
+                typewriter(document.getElementById('narrative'), "La premiere fois tla9ina c'était dans un miroir, entre les rayons et les reflets. I was nervous… but my eyes fell on yours.", 50, () => continueBtn.classList.add('visible'))
+            }, 1500);
+            const startHold = () => {
+                if (!continueBtn.classList.contains('visible')) return;
+                holdInterval = setInterval(() => {
+                    progress += 20;
+                    progressBar.style.width = `${progress/requiredHoldTime*100}%`;
+                    if (progress >= requiredHoldTime) { clearInterval(holdInterval); goToNextLevel() }
+                }, 20)
+            };
+            const stopHold = () => { clearInterval(holdInterval); progress = 0; progressBar.style.transition = 'width 0.3s ease-out'; progressBar.style.width = '0%'; setTimeout(() => progressBar.style.transition = 'width 0.1s linear', 300) };
+            continueBtn.addEventListener('mousedown', startHold);
+            continueBtn.addEventListener('touchstart', e => { e.preventDefault(); startHold() });
+            document.body.addEventListener('mouseup', stopHold);
+            document.body.addEventListener('touchend', stopHold);
+        };
+
+        SceneManager.logic.level2 = () => {
+            const narrativeEl = document.getElementById('narrative'), continueBtn = document.getElementById('continue-btn'), progressBar = document.getElementById('progress-bar'), mirrorEl = document.getElementById('mirror');
+            let holdInterval, progress = 0, requiredHoldTime = 1200;
+            const storyLines = ["Hdk nhar kount rayha nechri...", "Kan 3endi examen t3 physique...", "w kan khasni brk un stylo", "But then, fl mraya t3 lhanout ki dkhelt, Cheftek.", "My heart skipped. Everything froze.", "kount bin ferhana khayfa a lot of mixed feelings i felt on that day", "I failed the exam that day.", "Bsh mlgr tt kanat meilleure souvenir 3endi..."];
+            let lineIndex = 0;
+            function nextLine() {
+                if (lineIndex < storyLines.length) { typewriter(narrativeEl, storyLines[lineIndex], 40, () => { lineIndex++; setTimeout(nextLine, 1800) }) } else { continueBtn.classList.add('visible') }
+            }
+            setTimeout(() => { mirrorEl.style.opacity = '1'; setTimeout(nextLine, 1500) }, 500);
+            const goToNextLevel = () => { continueBtn.style.pointerEvents = 'none'; document.body.classList.add('fade-out'); GlitchManager.trigger(); AudioManager.playSound('transition'); setTimeout(SceneManager.next.bind(SceneManager), 1000) };
+            const startHold = () => {
+                if (!continueBtn.classList.contains('visible')) return;
+                holdInterval = setInterval(() => {
+                    progress += 20;
+                    progressBar.style.width = `${progress/requiredHoldTime*100}%`;
+                    if (progress >= requiredHoldTime) { clearInterval(holdInterval); goToNextLevel() }
+                }, 20)
+            };
+            const stopHold = () => { clearInterval(holdInterval); progress = 0; progressBar.style.transition = 'width 0.3s ease-out'; progressBar.style.width = '0%'; setTimeout(() => { progressBar.style.transition = 'width 0.1s linear' }, 300) };
+            continueBtn.addEventListener('mousedown', startHold);
+            continueBtn.addEventListener('touchstart', e => { e.preventDefault(); startHold() });
+            document.body.addEventListener('mouseup', stopHold);
+            document.body.addEventListener('touchend', stopHold);
+        };
+
+        SceneManager.logic.level3 = () => {
+            const narrativeEl = document.getElementById('narrative'), continueBtn = document.getElementById('continue-btn'), progressBar = document.getElementById('progress-bar'), boyEl = document.getElementById('boy');
+            let holdInterval, progress = 0, requiredHoldTime = 1800;
+            const storyLines = [{ text: 'It’s Thursday again…' }, { text: "Kount koul khetra koul khmis t3 examen.." }, { text: 'Ki nji kharja yediya yerjfou, I know he’ll be there.' }, { text: 'nkhrej w nhawes 3lik...' }, { text: 'mindak nel9ak jit', action: () => boyEl.classList.add('fade-in') }, { text: 'nreyeh nchouf houwa machi houwa?' }, { text: 'Mais...?' }, { text: 'lyouma lkhmis when m coding this game manich nchofek...', action: () => boyEl.classList.remove('fade-in') }, { text: "He's gone." }, { text: 'Had lkhetra nta roht...' }, { text: 'But ana reyeht hasla fhdk tekhmam, koul khmis nestanak even dok fla fac...' }];
+            let lineIndex = 0;
+            function nextLine() {
+                if (lineIndex < storyLines.length) { const line = storyLines[lineIndex]; line.action?.(); typewriter(narrativeEl, line.text, 45, () => { lineIndex++; setTimeout(nextLine, 1800) }) } else { continueBtn.classList.add('visible') }
+            }
+            nextLine();
+            const goToNextLevel = () => { continueBtn.style.pointerEvents = 'none'; document.body.classList.add('fade-out'); GlitchManager.trigger(600); AudioManager.playSound('transition'); setTimeout(SceneManager.next.bind(SceneManager), 1000) };
+            const startHold = () => {
+                if (!continueBtn.classList.contains('visible')) return;
+                holdInterval = setInterval(() => {
+                    progress += 20;
+                    progressBar.style.width = `${progress/requiredHoldTime*100}%`;
+                    if (progress >= requiredHoldTime) { clearInterval(holdInterval); goToNextLevel() }
+                }, 20)
+            };
+            const stopHold = () => { clearInterval(holdInterval); progress = 0; progressBar.style.transition = 'width 0.3s ease-out'; progressBar.style.width = '0%'; setTimeout(() => progressBar.style.transition = 'width 0.1s linear', 300) };
+            continueBtn.addEventListener('mousedown', startHold);
+            continueBtn.addEventListener('touchstart', e => { e.preventDefault(); startHold() });
+            document.body.addEventListener('mouseup', stopHold);
+            document.body.addEventListener('touchend', stopHold);
+        };
+        
         SceneManager.logic.game = () => {
-            initGameScene()
+            initGameScene();
         };
         
         SceneManager.logic.final = () => {
@@ -208,6 +301,8 @@
         SceneManager.logic.end = () => {
             localStorage.setItem('theStoryHasEnded', 'true');
             if (window.stopBackgroundAnimation) stopBackgroundAnimation();
+            document.body.innerHTML = '<div class="final-message"><h1>The Story is Complete</h1><p class="description">Thank you for listening.</p></div>';
+            document.body.classList.remove('fade-out');
         };
 
         SceneManager.init();
