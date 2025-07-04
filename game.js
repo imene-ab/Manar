@@ -1,4 +1,3 @@
-
 function initGameScene() {
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -111,7 +110,7 @@ function initGameScene() {
         if (gameState === 'GAMEOVER') return; // Don't trigger twice
         gameState = 'GAMEOVER';
         AudioManager.playSound('damage');
-        AudioManager.setSoundtrackPitch(0.5);
+        // AudioManager.setSoundtrackPitch(0.5); // <<< FIX: This line was removed to prevent audio slowdown.
         createBurst(player.x + player.width / 2, player.y + player.height / 2, colors.white, 50);
 
         // ** MODIFIED: Apply penalty instead of a full reset **
@@ -156,7 +155,59 @@ function initGameScene() {
         updateUI();
     }
 
-    function handleFinalWin() { gameState = 'CINEMATIC'; cancelAnimationFrame(animationFrameId); wrapper.style.opacity = '0'; uiContainer.classList.remove('visible'); setTimeout(() => { widescreenContainer.classList.add('visible'); cinematicOverlay.innerHTML = ''; TARGET_WORD.split('').forEach((char, index) => { const wrapper = document.createElement('div'); wrapper.className = 'cinematic-letter'; wrapper.style.animationDelay = `${index * 0.4 + 1}s`; const textSpan = document.createElement('span'); textSpan.textContent = char; const particleCanvas = document.createElement('canvas'); particleCanvas.className = 'particle-canvas'; wrapper.appendChild(textSpan); wrapper.appendChild(particleCanvas); cinematicOverlay.appendChild(wrapper); const ps = new ParticleSystem(particleCanvas, wrapper); ps.start(3500); }); setTimeout(() => { AudioManager.playSound('explode'); cinematicOverlay.querySelectorAll('.cinematic-letter').forEach(span => { span.style.setProperty('--tx', `${(Math.random() - 0.5) * 80}vw`); span.style.setProperty('--ty', `${(Math.random() - 0.5) * 80}vh`); span.style.setProperty('--r', `${(Math.random() - 0.5) * 720}deg`); span.classList.add('break'); }); }, 5000); setTimeout(() => { widescreenContainer.style.opacity = '0'; setTimeout(() => { window.SceneManager.next(); }, 1000); }, 7000); }, 600); }
+    function handleFinalWin() {
+        gameState = 'CINEMATIC';
+        cancelAnimationFrame(animationFrameId);
+        wrapper.style.opacity = '0';
+        uiContainer.classList.remove('visible');
+        setTimeout(() => {
+            widescreenContainer.classList.add('visible');
+            cinematicOverlay.innerHTML = '';
+            TARGET_WORD.split('').forEach((char, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'cinematic-letter';
+                wrapper.style.animationDelay = `${index * 0.4 + 1}s`;
+                const textSpan = document.createElement('span');
+                textSpan.textContent = char;
+                const particleCanvas = document.createElement('canvas');
+                particleCanvas.className = 'particle-canvas';
+                wrapper.appendChild(textSpan);
+                wrapper.appendChild(particleCanvas);
+                cinematicOverlay.appendChild(wrapper);
+                const ps = new ParticleSystem(particleCanvas, wrapper);
+                ps.start(3500);
+            });
+
+            // --- NEW CODE BLOCK START ---
+            // After 4 seconds, make the letters solid
+            setTimeout(() => {
+                AudioManager.playSound('promise'); // Add a satisfying sound effect
+                cinematicOverlay.querySelectorAll('.cinematic-letter').forEach(span => {
+                    span.classList.add('solid');
+                });
+            }, 4000);
+            // --- NEW CODE BLOCK END ---
+
+            // Existing break-apart logic
+            setTimeout(() => {
+                AudioManager.playSound('explode');
+                cinematicOverlay.querySelectorAll('.cinematic-letter').forEach(span => {
+                    span.style.setProperty('--tx', `${(Math.random() - 0.5) * 80}vw`);
+                    span.style.setProperty('--ty', `${(Math.random() - 0.5) * 80}vh`);
+                    span.style.setProperty('--r', `${(Math.random() - 0.5) * 720}deg`);
+                    span.classList.add('break');
+                });
+            }, 5000);
+            
+            setTimeout(() => {
+                widescreenContainer.style.opacity = '0';
+                setTimeout(() => {
+                    window.SceneManager.next();
+                }, 1000);
+            }, 7000);
+        }, 600);
+    }
+    
     function spawnItems() { spawnTimer--; if (spawnTimer > 0) return; if (gameState === 'PLAYING') { let spawns = ['collectible']; let difficulty = 'easy'; if (totalMemoryCollected > 40) { difficulty = 'hard'; } else if (totalMemoryCollected > 20) { difficulty = 'medium'; } switch (difficulty) { case 'easy': spawns.push('obstacle'); spawnTimer = 90; break; case 'medium': spawns.push('obstacle', 'obstacle_reinforced'); spawnTimer = 70; break; case 'hard': spawns.push('obstacle', 'obstacle_reinforced', 'obstacle_homing'); spawnTimer = 50; break; } if (Math.random() > (difficulty === 'easy' ? 0.95 : 0.92)) { spawns.push(['shield', 'magnet', 'boost'][Math.floor(Math.random() * 3)]); } items.push(createItem(spawns[Math.floor(Math.random() * spawns.length)])); } else if (gameState === 'LETTER_MODE') { const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; let letterToSpawn; if (Math.random() < 0.35) { letterToSpawn = TARGET_WORD[currentLetterIndex]; } else { let randomChar; do { randomChar = ALPHABET[Math.floor(Math.random() * ALPHABET.length)]; } while (randomChar === TARGET_WORD[currentLetterIndex]); letterToSpawn = randomChar; } items.push(createLetterItem(letterToSpawn)); spawnTimer = Math.max(30, 70 - (currentLetterIndex * 8)); } }
     
     function createLetterItem(letter) { const isCorrect = (letter === TARGET_WORD[currentLetterIndex]); const item = { type: isCorrect ? 'letter_correct' : 'letter_wrong', letter: letter, x: Math.random() * (canvas.width - 50 * scaleRatio), y: -50 * scaleRatio, width: 40 * scaleRatio, height: 40 * scaleRatio, speed: (Math.random() * 1.5 + 1) * scaleRatio, }; item.draw = (ctx) => { ctx.font = `bold ${item.width * 1.2}px 'Roboto Mono', monospace`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; if (isCorrect) { ctx.fillStyle = colors.white; ctx.shadowColor = colors.white; ctx.shadowBlur = 15; } else { ctx.fillStyle = colors.obstacle; ctx.shadowBlur = 0; } ctx.fillText(item.letter, item.x + item.width / 2, item.y + item.height / 2); ctx.shadowBlur = 0; }; return item; }
@@ -297,4 +348,3 @@ function initGameScene() {
 
     init();
 }
-
