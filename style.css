@@ -13,20 +13,7 @@
 }
 
 * { box-sizing: border-box; }
-
-body { 
-  font-family: 'Playfair Display', serif; 
-  background-color: var(--bg-color); 
-  color: var(--white); 
-  height: 100vh; 
-  margin: 0; 
-  overflow: hidden; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  transition: opacity 1s ease-in-out; 
-}
-
+body { font-family: 'Playfair Display', serif; background-color: var(--bg-color); color: var(--white); height: 100vh; margin: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: opacity 1s ease-in-out; }
 #bg-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; }
 body.fade-out { opacity: 0; }
 @keyframes fadeIn { to { opacity: 1; } }
@@ -65,19 +52,7 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
 .character { font-size: 4em; opacity: 0; transition: opacity 2s ease; margin: 20px 0; }
 .character.fade-in { opacity: 1 !important; }
 
-#game-wrapper {
-  position: relative;
-  width: 100%;
-  max-width: 450px;
-  max-height: 95vh;
-  aspect-ratio: 9 / 16;
-  box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
-  border-radius: 16px;
-  overflow: hidden;
-  background-color: transparent;
-  transition: opacity 0.5s ease-out;
-}
-
+#game-wrapper { position: relative; width: 100%; max-width: 450px; max-height: 95vh; aspect-ratio: 9 / 16; box-shadow: 0 0 60px rgba(0, 0, 0, 0.9); border-radius: 16px; overflow: hidden; background-color: transparent; transition: opacity 0.5s ease-out; }
 #gameCanvas { display: block; width: 100%; height: 100%; background-color: #000; }
 #game-wrapper .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(8, 8, 10, 0.85); backdrop-filter: blur(5px); z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; transition: opacity 0.5s ease; color: var(--white); }
 #game-wrapper .overlay.hidden { opacity: 0; pointer-events: none; }
@@ -115,21 +90,33 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
 @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 .final-message { text-align: center; padding: 20px; }
 
+/* Styles for the new closure container and button */
+#closure-container {
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    align-items: center;
+    margin-top: 40px;
+    opacity: 0;
+    animation: fadeIn 1.5s forwards;
+    animation-delay: 0.5s; 
+}
+#closure-container.visible {
+    display: flex; /* Makes it visible and starts animation */
+}
+#closure-container p {
+    opacity: 0.7;
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+#closure-container .hold-button {
+    opacity: 1; /* Override default hidden state */
+    padding: 10px 40px;
+}
+
 @media (max-width: 768px) {
-  .intro-container, .level-container, .letter-container {
-    width: 95vw;
-    max-width: 95vw;
-    padding: 25px 15px;
-  }
-  .story-text {
-    font-size: 1.2em;
-    min-height: 100px;
-  }
-  .letter {
-    font-size: 1.05em; 
-    line-height: 1.7;
-    text-align: left;
-  }
+  .intro-container, .level-container, .letter-container { width: 95vw; max-width: 95vw; padding: 25px 15px; }
+  .story-text { font-size: 1.2em; min-height: 100px; }
+  .letter { font-size: 1.05em; line-height: 1.7; text-align: left; }
   h1 { font-size: 2em; }
   .description { font-size: 1em; }
   .promise-label { font-size: 0.95em; }

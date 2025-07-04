@@ -62,9 +62,18 @@
       <div id="game-over-screen" class="overlay hidden"><h1>Run Ended</h1><p class="final-score-label">Final Score</p><p id="final-score">0</p><button id="retry-btn">Retry Run</button><div class="memory-progress-recap"><p>Total Memory Collected:</p><div class="progress-bar-container-recap"><div id="recap-progress-bar"></div></div></div></div>
     </div>
   </template>
+  
   <template id="template-final">
-      <div class="letter-container"><div class="letter" id="letter"></div></div>
+    <div class="letter-container">
+        <div class="letter" id="letter"></div>
+    </div>
+    <!-- This is the new closure element -->
+    <div id="closure-container">
+        <p>When you are ready.</p>
+        <button class="hold-button" id="end-experience-btn"><span>Finish</span></button>
+    </div>
   </template>
+
   <template id="template-end"></template>
   
   <script src="background.js"></script><script src="effects.js"></script><script src="audio.js"></script><script src="storyteller.js"></script><script src="game.js"></script>
@@ -158,8 +167,7 @@
         };
         
         SceneManager.logic.level1 = () => {
-            const continueBtn = document.getElementById('continue-btn'),
-                progressBar = document.getElementById('progress-bar');
+            const continueBtn = document.getElementById('continue-btn'), progressBar = document.getElementById('progress-bar');
             let holdInterval, progress = 0, requiredHoldTime = 1200;
             const goToNextLevel = () => {
                 continueBtn.style.pointerEvents = 'none';
@@ -177,19 +185,10 @@
                 holdInterval = setInterval(() => {
                     progress += 20;
                     progressBar.style.width = `${progress/requiredHoldTime*100}%`;
-                    if (progress >= requiredHoldTime) {
-                        clearInterval(holdInterval);
-                        goToNextLevel()
-                    }
+                    if (progress >= requiredHoldTime) { clearInterval(holdInterval); goToNextLevel() }
                 }, 20)
             };
-            const stopHold = () => {
-                clearInterval(holdInterval);
-                progress = 0;
-                progressBar.style.transition = 'width 0.3s ease-out';
-                progressBar.style.width = '0%';
-                setTimeout(() => progressBar.style.transition = 'width 0.1s linear', 300)
-            };
+            const stopHold = () => { clearInterval(holdInterval); progress = 0; progressBar.style.transition = 'width 0.3s ease-out'; progressBar.style.width = '0%'; setTimeout(() => progressBar.style.transition = 'width 0.1s linear', 300) };
             continueBtn.addEventListener('mousedown', startHold);
             continueBtn.addEventListener('touchstart', e => { e.preventDefault(); startHold() });
             document.body.addEventListener('mouseup', stopHold);
@@ -197,55 +196,24 @@
         };
 
         SceneManager.logic.level2 = () => {
-            const narrativeEl = document.getElementById('narrative'),
-                continueBtn = document.getElementById('continue-btn'),
-                progressBar = document.getElementById('progress-bar'),
-                mirrorEl = document.getElementById('mirror');
-            let holdInterval, progress = 0,
-                requiredHoldTime = 1200;
+            const narrativeEl = document.getElementById('narrative'), continueBtn = document.getElementById('continue-btn'), progressBar = document.getElementById('progress-bar'), mirrorEl = document.getElementById('mirror');
+            let holdInterval, progress = 0, requiredHoldTime = 1200;
             const storyLines = ["Hdk nhar kount rayha nechri...", "Kan 3endi examen t3 physique...", "w kan khasni brk un stylo", "But then, fl mraya t3 lhanout ki dkhelt, Cheftek.", "My heart skipped. Everything froze.", "kount bin ferhana khayfa a lot of mixed feelings i felt on that day", "I failed the exam that day.", "Bsh mlgr tt kanat meilleure souvenir 3endi..."];
             let lineIndex = 0;
             function nextLine() {
-                if (lineIndex < storyLines.length) {
-                    typewriter(narrativeEl, storyLines[lineIndex], 40, () => {
-                        lineIndex++;
-                        setTimeout(nextLine, 1800)
-                    })
-                } else {
-                    continueBtn.classList.add('visible')
-                }
+                if (lineIndex < storyLines.length) { typewriter(narrativeEl, storyLines[lineIndex], 40, () => { lineIndex++; setTimeout(nextLine, 1800) }) } else { continueBtn.classList.add('visible') }
             }
-            setTimeout(() => {
-                mirrorEl.style.opacity = '1';
-                setTimeout(nextLine, 1500)
-            }, 500);
-            const goToNextLevel = () => {
-                continueBtn.style.pointerEvents = 'none';
-                document.body.classList.add('fade-out');
-                GlitchManager.trigger();
-                AudioManager.playSound('transition');
-                setTimeout(SceneManager.next.bind(SceneManager), 1000)
-            };
+            setTimeout(() => { mirrorEl.style.opacity = '1'; setTimeout(nextLine, 1500) }, 500);
+            const goToNextLevel = () => { continueBtn.style.pointerEvents = 'none'; document.body.classList.add('fade-out'); GlitchManager.trigger(); AudioManager.playSound('transition'); setTimeout(SceneManager.next.bind(SceneManager), 1000) };
             const startHold = () => {
                 if (!continueBtn.classList.contains('visible')) return;
                 holdInterval = setInterval(() => {
                     progress += 20;
                     progressBar.style.width = `${progress/requiredHoldTime*100}%`;
-                    if (progress >= requiredHoldTime) {
-                        clearInterval(holdInterval);
-                        goToNextLevel()
-                    }
+                    if (progress >= requiredHoldTime) { clearInterval(holdInterval); goToNextLevel() }
                 }, 20)
             };
-            const stopHold = () => {
-                clearInterval(holdInterval);
-                progress = 0;
-                progressBar.style.transition = 'width 0.3s ease-out';
-                progressBar.style.width = '0%';
-                setTimeout(() => {
-                    progressBar.style.transition = 'width 0.1s linear'
-                }, 300)
-            };
+            const stopHold = () => { clearInterval(holdInterval); progress = 0; progressBar.style.transition = 'width 0.3s ease-out'; progressBar.style.width = '0%'; setTimeout(() => { progressBar.style.transition = 'width 0.1s linear' }, 300) };
             continueBtn.addEventListener('mousedown', startHold);
             continueBtn.addEventListener('touchstart', e => { e.preventDefault(); startHold() });
             document.body.addEventListener('mouseup', stopHold);
@@ -253,51 +221,24 @@
         };
 
         SceneManager.logic.level3 = () => {
-            const narrativeEl = document.getElementById('narrative'),
-                continueBtn = document.getElementById('continue-btn'),
-                progressBar = document.getElementById('progress-bar'),
-                boyEl = document.getElementById('boy');
+            const narrativeEl = document.getElementById('narrative'), continueBtn = document.getElementById('continue-btn'), progressBar = document.getElementById('progress-bar'), boyEl = document.getElementById('boy');
             let holdInterval, progress = 0, requiredHoldTime = 1800;
             const storyLines = [{ text: 'It’s Thursday again…' }, { text: "Kount koul khetra koul khmis t3 examen.." }, { text: 'Ki nji kharja yediya yerjfou, I know he’ll be there.' }, { text: 'nkhrej w nhawes 3lik...' }, { text: 'mindak nel9ak jit', action: () => boyEl.classList.add('fade-in') }, { text: 'nreyeh nchouf houwa machi houwa?' }, { text: 'Mais...?' }, { text: 'lyouma lkhmis when m coding this game manich nchofek...', action: () => boyEl.classList.remove('fade-in') }, { text: "He's gone." }, { text: 'Had lkhetra nta roht...' }, { text: 'But ana reyeht hasla fhdk tekhmam, koul khmis nestanak even dok fla fac...' }];
             let lineIndex = 0;
             function nextLine() {
-                if (lineIndex < storyLines.length) {
-                    const line = storyLines[lineIndex];
-                    line.action?.();
-                    typewriter(narrativeEl, line.text, 45, () => {
-                        lineIndex++;
-                        setTimeout(nextLine, 1800)
-                    })
-                } else {
-                    continueBtn.classList.add('visible')
-                }
+                if (lineIndex < storyLines.length) { const line = storyLines[lineIndex]; line.action?.(); typewriter(narrativeEl, line.text, 45, () => { lineIndex++; setTimeout(nextLine, 1800) }) } else { continueBtn.classList.add('visible') }
             }
             nextLine();
-            const goToNextLevel = () => {
-                continueBtn.style.pointerEvents = 'none';
-                document.body.classList.add('fade-out');
-                GlitchManager.trigger(600);
-                AudioManager.playSound('transition');
-                setTimeout(SceneManager.next.bind(SceneManager), 1000)
-            };
+            const goToNextLevel = () => { continueBtn.style.pointerEvents = 'none'; document.body.classList.add('fade-out'); GlitchManager.trigger(600); AudioManager.playSound('transition'); setTimeout(SceneManager.next.bind(SceneManager), 1000) };
             const startHold = () => {
                 if (!continueBtn.classList.contains('visible')) return;
                 holdInterval = setInterval(() => {
                     progress += 20;
                     progressBar.style.width = `${progress/requiredHoldTime*100}%`;
-                    if (progress >= requiredHoldTime) {
-                        clearInterval(holdInterval);
-                        goToNextLevel()
-                    }
+                    if (progress >= requiredHoldTime) { clearInterval(holdInterval); goToNextLevel() }
                 }, 20)
             };
-            const stopHold = () => {
-                clearInterval(holdInterval);
-                progress = 0;
-                progressBar.style.transition = 'width 0.3s ease-out';
-                progressBar.style.width = '0%';
-                setTimeout(() => progressBar.style.transition = 'width 0.1s linear', 300)
-            };
+            const stopHold = () => { clearInterval(holdInterval); progress = 0; progressBar.style.transition = 'width 0.3s ease-out'; progressBar.style.width = '0%'; setTimeout(() => progressBar.style.transition = 'width 0.1s linear', 300) };
             continueBtn.addEventListener('mousedown', startHold);
             continueBtn.addEventListener('touchstart', e => { e.preventDefault(); startHold() });
             document.body.addEventListener('mouseup', stopHold);
@@ -310,34 +251,42 @@
         
         SceneManager.logic.final = () => {
             AudioManager.setSoundtrackPitch(1.0); 
-
-            const message = "hy, hadi ana again imene bsh for the last time m talking to u from this game... u would say hadi 3lh rahi samta hhh but sede9ni mchi ana, 3lbli fatou 3ans bsh jwzthom w deyra fbali beli f la fin ha nkounou kifkif 93dt haka maamna bhad l3fsa jms dert fbali beli rak nasini cheft hadak lcadre li weritholek hdk nhar? 3lblk mchi ana li khabitou had l3wam kaml mama hiya li khabatou khetra 3la khetra kount nejbdelha 3lik w nchkor fik 9odamha kount daymen dayrtek afdal insan fhyaty kount ned3i tkoun hlali,\n ki b3tlk l3am li fat 9otli mnhkich m3a lbnat ana 9olt rah nawini lhlal blk chghl kount deymn nel9alk seba bch tryh fi 9elbi l3fsa li 9otli 3liha beli koulech fl39l hadik ki twalf bnadem mchi ki theb bnadem en tt cas nta lwl li hbitk w 9olthlk ms nta mchi kifkif 3ndk ana kfh kount nchoufek w nta kfh deyrni mchi kifkif kml, \n 3yit 2yit surtt hd lyamat menhar 9otli beli sah cbn w ana 9elbi ywj3 fiya nchoufek partout nhws 3lik fkol jiha alors la hadik lidee t3 kayna wehda fhyatek....\n m9drtch ndirha frassi ms dok ha ndirha frassi w netmcha biha mrhch tkoun sahla ms dok yfoutou 3ans, 4ans wela 10ans mrhch nzid nban fhyatek a vie w binatna smah denya w akhra hadi akhir haja ndirha 3ljlk w last step 3endi w 3endk w hnaya tekhles lhistoire.\n thanks for listening :). fi amani allah abderezzak.";
+            const message = "hy, hadi ana again imene bsh for the last time m talking to u from this game... u would say hadi 3lh rah samta hhh but sede9ni mchi ana, 3lbli fatou 3ans bsh jwzthom w deyra fbali beli f la fin ha nkounou kifkif 93dt haka maamna bhad l3fsa js dert fbali beli rak nasini cheft hadak lcadre li weritholek hdk nhar? 3lblk mchi ana li khabitou had l3wam kaml mama hiya li khabatou khetra 3la khetra kount nejbdelha 3lik w nchkor fik 9odamha kount daymen dayrtek afdal insan fhyaty kount ned3i tkoun hlali,\n ki b3tlk l3am li fat 9otli mnhkich m3a lbnat ana 9olt rah nawini lhlal blk chghl kount deymn nel9alk seba bch tryh fi 9elbi l3fsa li 9otli 3liha beli koulech fl39l hadik ki twalf bnadem mchi ki theb bnadem en tt cas nta lwl li hbitk w 9olthlk ms nta mchi kifkif 3ndk ana kfh kount nchoufek w nta kfh deyrni mchi kifkif kml, \n 3yit 2yit surtt hd lyamat menhar 9otli beli sah cbn w ana 9elbi ywj3 fiya nchoufek partout nhws 3lik fkol jiha alors la hadik lidee t3 kayna wehda fhyatek....\n m9drtch ndirha frassi ms dok ha ndirha frassi w netmcha biha mrhch tkoun sahla ms dok yfoutou 3ans, 4ans wela 10ans mrhch nzid nban fhyatek a vie w binatna smah denya w akhra hadi akhir haja ndirha 3ljlk w last step 3endi w 3endk w hnaya tekhles lhistoire.\n thanks for listening :). fi amani allah abderezzak.";
+            
             const letterContainer = document.getElementById('letter');
             let delay = 0;
 
+            // --- THIS LOGIC IS NOW MODIFIED ---
+
+            const closureContainer = document.getElementById('closure-container');
+            const endBtn = document.getElementById('end-experience-btn');
+
             message.split('').forEach(char => {
-                if (char === '\n') {
-                    letterContainer.appendChild(document.createElement('br'));
-                } else {
+                if (char === '\n') { letterContainer.appendChild(document.createElement('br')); } 
+                else {
                     const span = document.createElement('span');
                     span.innerHTML = char; 
                     span.style.animationDelay = `${delay}s`;
-                    if (char !== ' ') { 
-                        // --- FIX 1: SLOWED DOWN TYPING SPEED ---
-                        // Changed from .05 to .07
-                        delay += .07;
-                    }
+                    if (char !== ' ') { delay += .07; }
                     letterContainer.appendChild(span);
                 }
             });
 
-            // --- FIX 2: INCREASED READING TIME ---
-            // Changed from 20000ms to 45000ms (45 seconds)
-            const totalAnimationTime = delay * 1000 + 45000;
+            // 2.5 minutes in milliseconds
+            const readingTimeInMs = 150000;
+            const timeUntilButtonAppears = (delay * 1000) + readingTimeInMs;
+            
+            // Show the button after the time has passed
             setTimeout(() => {
+                closureContainer.classList.add('visible');
+            }, timeUntilButtonAppears);
+
+            // Add the event listener for the button
+            endBtn.addEventListener('click', () => {
+                endBtn.style.pointerEvents = 'none';
                 document.body.classList.add('fade-out');
-                setTimeout(SceneManager.next.bind(SceneManager), 2000)
-            }, totalAnimationTime);
+                setTimeout(SceneManager.next.bind(SceneManager), 2000);
+            });
         };
 
         SceneManager.logic.end = () => {
