@@ -75,11 +75,41 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
 #target-letter-display { grid-column: 1 / -1; text-align: center; font-size: 1.5em; font-weight: bold; color: #fff; text-shadow: 0 0 10px var(--magnet-color); height: 30px; order: -1; margin-bottom: 5px; }
 #widescreen-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 20; background-color: #000; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 1s ease-in; }
 #widescreen-container.visible { opacity: 1; pointer-events: auto; }
-#cinematic-overlay { display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 2vmin; font-family: 'Playfair Display', serif; font-weight: bold; color: transparent; }
-.cinematic-letter { position: relative; font-size: 20vmin; text-shadow: 0 0 25px var(--glow-color); opacity: 0; animation: reveal-letter 3s cubic-bezier(0.19, 1, 0.22, 1) forwards; }
+#cinematic-overlay { display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 2vmin; font-family: 'Playfair Display', serif; font-weight: bold; }
+
+/* MODIFIED: The text fill color starts transparent */
+.cinematic-letter {
+  position: relative;
+  font-size: 20vmin;
+  text-shadow: 0 0 25px var(--glow-color);
+  opacity: 0;
+  color: transparent; /* This makes the text fill invisible initially, only showing the glow */
+  animation: reveal-letter 3s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
 .particle-canvas { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200%; height: 200%; z-index: -1; }
 .cinematic-letter.break { animation: break-apart 2s forwards; animation-delay: 0s !important; }
-@keyframes reveal-letter { 0% { opacity: 0; transform: scale(0.8); } 40% { opacity: 1; } 100% { opacity: 1; transform: scale(1); } }
+
+/* MODIFIED: This keyframe now animates the color to solid white after the glow appears */
+@keyframes reveal-letter {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1; /* At 40%, the glow (from text-shadow) is fully visible */
+  }
+  60% {
+    color: var(--white); /* At 60%, the text fill becomes solid white, making it "clear" */
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    color: var(--white); /* Ensure it ends as solid white */
+  }
+}
+
 @keyframes break-apart { to { opacity: 0; text-shadow: none; transform: translate(var(--tx, 0), var(--ty, 0)) rotate(var(--r, 0)) scale(0.5); } }
 
 .powerup-timer { background-color: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 5px; font-size: 0.9em;}
@@ -133,7 +163,7 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
   }
 }
 
-/* --- FIX: Specific rules for the Final Letter scene to make it scrollable --- */
+/* --- Specific rules for the Final Letter scene to make it scrollable --- */
 .scene-final {
     /* Override global centering and align the box to the top */
     align-items: flex-start;
