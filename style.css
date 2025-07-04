@@ -52,7 +52,30 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
 .character { font-size: 4em; opacity: 0; transition: opacity 2s ease; margin: 20px 0; }
 .character.fade-in { opacity: 1 !important; }
 
-#game-wrapper { position: relative; width: 100%; max-width: 720px; max-height: 95vh; aspect-ratio: 9 / 16; box-shadow: 0 0 60px rgba(0, 0, 0, 0.9); border-radius: 16px; overflow: hidden; background-color: transparent; transition: opacity 0.5s ease-out; }
+/* --- MODIFICATION START --- */
+#game-wrapper {
+  position: relative;
+  
+  /* Make the container's height 80% of the viewport's height. This is the main sizing driver. */
+  height: 80vh; 
+  /* Maintain the 9:16 portrait shape. The width will be calculated automatically based on the height. */
+  aspect-ratio: 9 / 16;
+  
+  /* On very TALL and NARROW screens (like mobile), prevent the width from exceeding the screen width. */
+  max-width: 95vw; 
+
+  /* On very LARGE monitors, prevent the container from becoming absurdly huge. This sets a pixel limit. */
+  max-height: 800px;
+  
+  /* Visual styles */
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: transparent;
+  transition: opacity 0.5s ease-out;
+}
+/* --- MODIFICATION END --- */
+
 #gameCanvas { display: block; width: 100%; height: 100%; background-color: #000; }
 #game-wrapper .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(8, 8, 10, 0.85); backdrop-filter: blur(5px); z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; transition: opacity 0.5s ease; color: var(--white); }
 #game-wrapper .overlay.hidden { opacity: 0; pointer-events: none; }
@@ -121,8 +144,7 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
   .description { font-size: 1em; }
   .promise-label { font-size: 0.95em; }
   .profile-fade { width: 120px; height: 120px; }
-  /* Make game wrapper smaller on phones */
-  #game-wrapper { max-width: 95vw; }
+  /* The media query for #game-wrapper is no longer needed with the new adaptive rule above */
 }
 
 body.scene-final {

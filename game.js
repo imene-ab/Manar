@@ -179,7 +179,8 @@ function initGameScene() {
         const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; 
         let letterToSpawn; 
         
-        if (Math.random() < 0.40) { 
+        // MODIFICATION 1: Increased chance of correct letter from 40% to 60%
+        if (Math.random() < 0.60) { 
             letterToSpawn = TARGET_WORD[currentLetterIndex]; 
         } else { 
             let randomChar; 
@@ -189,7 +190,9 @@ function initGameScene() {
             letterToSpawn = randomChar; 
         } 
         items.push(createLetterItem(letterToSpawn)); 
-        spawnTimer = Math.max(20, 45 - (currentLetterIndex * 5)); 
+        
+        // MODIFICATION 2: Decreased spawn rate (higher number = slower)
+        spawnTimer = Math.max(25, 55 - (currentLetterIndex * 5)); 
     }
     
     function createLetterItem(letter) { 
@@ -201,7 +204,8 @@ function initGameScene() {
             y: -50 * scaleRatio, 
             width: 40 * scaleRatio, 
             height: 40 * scaleRatio, 
-            speed: (Math.random() * 2.0 + 2.5) * scaleRatio, 
+            // MODIFICATION 3: Decreased letter fall speed (lower number = slower)
+            speed: (Math.random() * 1.5 + 2.0) * scaleRatio, 
         }; 
         item.draw = (ctx) => { 
             ctx.font = `bold ${item.width * 1.2}px 'Roboto Mono', monospace`; 

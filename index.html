@@ -289,21 +289,24 @@
                 }
             });
 
-            // FIXED: Reduced the long wait time from 2.5 minutes to 10 seconds
-            const readingTimeInMs = 10000;
-            const timeUntilButtonAppears = (1000) ;
+            // --- MODIFICATION START ---
+            // Calculate the total time for the typing animation.
+            const totalTypingTime = delay * 1000;
+            // Add a 5-second pause after typing for the user to read before the button appears.
+            const timeUntilButtonAppears = totalTypingTime ; 
             
-            // Show the button after the time has passed
+            // Show the button AFTER the calculated time has passed.
             setTimeout(() => {
                 closureContainer.classList.add('visible');
             }, timeUntilButtonAppears);
 
-            // Add the event listener for the button
+            // Add the event listener for the button. A simple 'click' is correct here.
             endBtn.addEventListener('click', () => {
                 endBtn.style.pointerEvents = 'none';
                 document.body.classList.add('fade-out');
                 setTimeout(SceneManager.next.bind(SceneManager), 2000);
             });
+            // --- MODIFICATION END ---
         };
 
         SceneManager.logic.end = () => {
@@ -588,21 +591,24 @@
                 }
             });
 
-            // 2.5 minutes in milliseconds
-            const readingTimeInMs = 150000;
-            const timeUntilButtonAppears = (delay * 1000) + readingTimeInMs;
+            // --- MODIFICATION START ---
+            // Calculate the total time for the typing animation.
+            const totalTypingTime = delay * 1000;
+            // Add a 5-second pause after typing for the user to read before the button appears.
+            const timeUntilButtonAppears = totalTypingTime + 5000; 
             
-            // Show the button after the time has passed
+            // Show the button AFTER the calculated time has passed.
             setTimeout(() => {
                 closureContainer.classList.add('visible');
             }, timeUntilButtonAppears);
 
-            // Add the event listener for the button
+            // Add the event listener for the button. A simple 'click' is correct here.
             endBtn.addEventListener('click', () => {
                 endBtn.style.pointerEvents = 'none';
                 document.body.classList.add('fade-out');
                 setTimeout(SceneManager.next.bind(SceneManager), 2000);
             });
+            // --- MODIFICATION END ---
         };
 
         SceneManager.logic.end = () => {
