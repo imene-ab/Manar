@@ -92,7 +92,7 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
 .particle-canvas { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200%; height: 200%; z-index: -1; }
 
 .cinematic-letter.solid {
-  color: var(--white); 
+  color: var(--white);
   text-shadow: none;
   transition: color 0.5s ease-out, text-shadow 0.5s ease-out;
 }
@@ -102,14 +102,14 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
 @keyframes break-apart { to { opacity: 0; text-shadow: none; transform: translate(var(--tx, 0), var(--ty, 0)) rotate(var(--r, 0)) scale(0.5); } }
 
 .powerup-timer { background-color: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 5px; font-size: 0.9em;}
-.letter-container { 
-  z-index: 1; 
-  max-width: 700px; 
-  background-color: rgba(8, 8, 10, 0.75); 
-  backdrop-filter: blur(5px); 
-  padding: 40px; 
-  border-radius: 12px; 
-  box-shadow: 0 0 40px rgba(255, 255, 255, 0.05); 
+.letter-container {
+  z-index: 1;
+  max-width: 700px;
+  background-color: rgba(8, 8, 10, 0.75);
+  backdrop-filter: blur(5px);
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.05);
 }
 
 .letter {
@@ -117,7 +117,7 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
   font-size: 1.3em;
   color: var(--white);
   text-align: center;
-  white-space: pre-wrap; 
+  white-space: pre-wrap;
 }
 
 .letter span {
@@ -130,10 +130,7 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
 @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 .final-message { text-align: center; padding: 20px; }
 
-
-/* --- FIX: RESPONSIVE STYLES FOR MOBILE (RE-ADDED) --- */
 @media (max-width: 768px) {
-  /* This rule applies to all story screens, including the final letter */
   .intro-container, .level-container, .letter-container {
     width: 95vw;
     max-width: 95vw;
@@ -144,12 +141,11 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
     font-size: 1.2em;
     min-height: 100px;
   }
-  
-  /* Crucial for making the final letter readable on a phone */
+
   .letter {
-    font-size: 1.05em; 
+    font-size: 1.05em;
     line-height: 1.7;
-    text-align: left; /* Left-align is much easier to read for paragraphs on mobile */
+    text-align: left;
   }
 
   h1 {
@@ -168,4 +164,16 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
     width: 120px;
     height: 120px;
   }
+}
+
+/* --- THIS IS THE FIX --- */
+/* Special layout for the final, scrollable letter scene */
+body.scene-final {
+  /* Re-enable vertical scrolling for the whole page */
+  overflow-y: auto; 
+  /* Align the letter container to the top instead of the center */
+  align-items: flex-start;
+  /* Add some space at the top and bottom so the letter isn't stuck to the edges */
+  padding-top: 5vh;
+  padding-bottom: 5vh;
 }
