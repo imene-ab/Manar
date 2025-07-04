@@ -52,15 +52,12 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
 .character { font-size: 4em; opacity: 0; transition: opacity 2s ease; margin: 20px 0; }
 .character.fade-in { opacity: 1 !important; }
 
-/* --- THIS BLOCK IS THE FIX --- */
 #game-wrapper {
   position: relative;
-  /* Replaced fixed height with flexible constraints */
   width: 100%;
   max-width: 450px;
   max-height: 95vh;
   aspect-ratio: 9 / 16;
-  /* --- Unchanged properties below --- */
   box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
   border-radius: 16px;
   overflow: hidden;
@@ -95,9 +92,9 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
 .particle-canvas { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200%; height: 200%; z-index: -1; }
 
 .cinematic-letter.solid {
-  color: var(--white); /* Override the parent's transparent color to make text visible */
-  text-shadow: none;     /* Remove the glow effect */
-  transition: color 0.5s ease-out, text-shadow 0.5s ease-out; /* Add a smooth effect */
+  color: var(--white); 
+  text-shadow: none;
+  transition: color 0.5s ease-out, text-shadow 0.5s ease-out;
 }
 
 .cinematic-letter.break { animation: break-apart 2s forwards; animation-delay: 0s !important; }
@@ -105,12 +102,9 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
 @keyframes break-apart { to { opacity: 0; text-shadow: none; transform: translate(var(--tx, 0), var(--ty, 0)) rotate(var(--r, 0)) scale(0.5); } }
 
 .powerup-timer { background-color: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 5px; font-size: 0.9em;}
-
-/* --- FIX #1: BACKGROUND --- */
 .letter-container { 
   z-index: 1; 
   max-width: 700px; 
-  /* Changed from a transparent white to a more opaque dark background for readability */
   background-color: rgba(8, 8, 10, 0.75); 
   backdrop-filter: blur(5px); 
   padding: 40px; 
@@ -121,14 +115,13 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
 .letter {
   line-height: 1.8;
   font-size: 1.3em;
-  color: var(--white); /* Changed from #ccc to brighter --white for better contrast */
+  color: var(--white);
   text-align: center;
   white-space: pre-wrap; 
 }
 
-/* --- FIX #2: WORD WRAPPING --- */
 .letter span {
-  display: inline; /* Changed from inline-block to inline */
+  display: inline;
   opacity: 0;
   transform: translateY(20px);
   animation: fadeInUp 0.8s forwards;
@@ -138,8 +131,9 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
 .final-message { text-align: center; padding: 20px; }
 
 
-/* --- Responsive Styles for Mobile --- */
+/* --- FIX: RESPONSIVE STYLES FOR MOBILE (RE-ADDED) --- */
 @media (max-width: 768px) {
+  /* This rule applies to all story screens, including the final letter */
   .intro-container, .level-container, .letter-container {
     width: 95vw;
     max-width: 95vw;
@@ -150,11 +144,12 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
     font-size: 1.2em;
     min-height: 100px;
   }
-
+  
+  /* Crucial for making the final letter readable on a phone */
   .letter {
     font-size: 1.05em; 
     line-height: 1.7;
-    text-align: left; 
+    text-align: left; /* Left-align is much easier to read for paragraphs on mobile */
   }
 
   h1 {
