@@ -136,6 +136,23 @@ h1 { font-size: 2.8em; color: var(--primary-color); margin-bottom: 20px; }
     padding: 10px 40px;
 }
 
+/* MODIFICATION: New style for the simple "Finish" button */
+.final-button {
+    padding: 12px 40px;
+    font-size: 1.1em;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+.final-button:hover {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
 @media (max-width: 768px) {
   .intro-container, .level-container, .letter-container { width: 95vw; max-width: 95vw; padding: 25px 15px; }
   .story-text { font-size: 1.2em; min-height: 100px; }
